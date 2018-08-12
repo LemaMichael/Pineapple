@@ -68,53 +68,98 @@ static BOOL hasBeenCalled = NO;
 
 		hasBeenCalled = YES;
 	}
+	// BOOL val = %orig;
+	//HBLogDebug(@"_isTemporarilyBlocked %d", val);
 	return NO;
 }
 -(BOOL)_isPermanentlyBlocked {
+	// BOOL val = %orig;
+	//HBLogDebug(@"_isPermanentlyBlocked %d", val);
 	return NO;
 }
+
 +(BOOL)_isInGracePeriodState{
 	BOOL val = %orig;
 	HBLogDebug(@"_isInGracePeriodState %d", val);
 	return val;
 }
+//: Called user uses finger as passcode
 +(BOOL)_isInBioUnlockState{
 	BOOL val = %orig;
-	HBLogDebug(@"_isInBioUnlockState %d", val);
+	// HBLogDebug(@"_isInBioUnlockState %d", val);
 	return val;
 }
--(BOOL)_performNilPasscodeCheck{
-	BOOL val = %orig;
-	HBLogDebug(@"_performNilPasscodeCheck %d", val);
++(long long)_extendedKeybagState {
+	long long val = %orig;
+	HBLogDebug(@"_extendedKeybagState %lld", val);
 	return val;
 }
-
--(BOOL)_isUserAuthenticated{
-	BOOL val = %orig;
-	HBLogDebug(@"_isUserAuthenticated %d", val);
-	return val;
-}
-
--(void)_revokeAuthenticationImmediately:(BOOL)arg1 forPublicReason:(id)arg2 {
-	BOOL val = arg1;
-	HBLogDebug(@"has been revoked? %d because of %@", val, arg2);
+-(void)dealloc {
+	HBLogDebug(@"dealloc");
 	%orig;
 }
--(BOOL)_shouldRevokeAuthenticationNow{
-	BOOL val = %orig;
-	HBLogDebug(@"_shouldRevokeAuthenticationNow %d", val);
+-(NSString *)description {
+	NSString *val = %orig;
+	HBLogDebug(@"description %@", val);
 	return val;
 }
--(id)_lastIncorrectPasscodeAttempt {
+-(void)_clearBlockedState {
+	HBLogDebug(@"_clearBlockedState");
+	%orig;
+}
+-(void)keybagDidUnlockForTheFirstTime:(id)arg1 {
+	id val = arg1;
+	HBLogDebug(@"keybagDidUnlockForTheFirstTime, value: %@", val);
+	%orig;
+}
+-(id)publicDescription {
 	id val = %orig;
-	HBLogDebug(@"_lastIncorrectPasscodeAttempt %@", val);
+	HBLogDebug(@"publicDescription, value: %@", val);
+	return val;
+}
+-(void)keybag:(id)arg1 extendedStateDidChange:(id)arg2 {
+	id val = arg1;
+	id val2 = arg2;
+	HBLogDebug(@"keybag, arg1 value: %@..... arg2 value: %@", val, val2);
+	%orig;
+}
+//: Tells us whether there is a passcode set 
+-(BOOL)hasPasscodeSet {
+	BOOL val = %orig;
+	//HBLogDebug(@"hasPasscodeSet %d", val);
+	return val;
+}
+-(id)initWithAssertionManager:(id)arg1 policy:(id)arg2 keybag:(id)arg3 model:(id)arg4 {
+	id val = arg1; 
+	id val2 = arg2; 
+	id val3 = arg3; 
+	id val4 = arg4; 
+	id finalValue = %orig;
+	HBLogDebug(@"initWithAssertionManager, arg values: %@ %@ %@ %@ finalValue: %@", val, val2, val3, val4, finalValue);
 	return %orig;
 }
--(void)_setLastIncorrectPasscodeAttempt:(id)arg1 {
-	id val = arg1;
-	HBLogDebug(@"_setLastIncorrectPasscodeAttempt %@", val);
+-(void)_initializeAuthenticationStateAndDateForLockState:(long long)arg1 {
+	long long val = arg1;
+	HBLogDebug(@"_initializeAuthenticationStateAndDateForLockState %lld", val); 
 	%orig;
 }
+-(void)_establishAuthenticationStateForInit:(long long)arg1 {
+	HBLogDebug(@"_establishAuthenticationStateForInit");
+	%log;
+	%orig;
+}
+-(void)_setupPolicy:(id)arg1  {
+	HBLogDebug(@"_setupPolicy");
+	%log;
+	%orig;
+}
+-(void)_setHasBeenAuthenticatedOnceSinceBoot:(BOOL)arg1 {
+	HBLogDebug(@"_setHasBeenAuthenticatedOnceSinceBoot");
+
+	%log;
+	%orig;
+}
+
 
 -(BOOL)_authenticateWithPasscodeData:(id)arg1 outError:(id*)arg2 {
 	/*
