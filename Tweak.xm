@@ -26,7 +26,7 @@
 -(BOOL)_isUserAuthenticated;
 -(void)_revokeAuthenticationImmediately:(BOOL)arg1 forPublicReason:(id)arg2 ;
 -(void)_updateAuthenticationStateForPublicReason:(id)arg1 ;
-//-(BOOL)isAssertionValid:(id)arg1 ;
+//-(BOOL)isAssertionValid:(id)arg1 ; GIVES PHONE ENDLESS LOOP and crashes
 -(void)notePasscodeEntryBegan;
 -(void)notePasscodeEntryCancelled;
 -(void)_notifyAboutTemporaryBlockStatusChanged;
@@ -68,6 +68,60 @@
 -(id)descriptionBuilderWithMultilinePrefix:(id)arg1 ;
 -(id)_model;
 @end
+
+@interface SBFUserAuthenticationModelSEP : NSObject {
+	double _unblockTime;
+
+} 
+-(void)refreshBlockedState;
+-(BOOL)isTemporarilyBlocked;
+-(double)timeUntilUnblockedSinceReferenceDate;
+-(BOOL)isPermanentlyBlocked;
+-(void)clearBlockedState;
+-(NSString *)description;
+-(void)notePasscodeUnlockFailedWithError:(id)arg1 ;
+
+@end
+
+
+%hook SBFUserAuthenticationModelSEP
+-(BOOL)isTemporarilyBlocked{
+	return NO;
+}
+//: VALUE BEFORE didfinish gets called
+//: Printed: -63114076800.000000
+//: printed: -63114076800.000000
+//: when user gets 4th attempt wrong, 
+// 555890190.482543 is next new val
+// 555890190.815751 is the new val
+
+-(double)timeUntilUnblockedSinceReferenceDate{
+	double time = MSHookIvar<double>(self, "_unblockTime");
+	HBLogDebug(@"_unblockTime, %f \n", time);
+	MSHookIvar<double>(self, "_unblockTime") = 0.000000;
+	double val = %orig;
+	HBLogDebug(@"timeUntilUnblockedSinceReferenceDate: %f \n", val);
+
+	return 0.000000;
+
+}
+-(BOOL)isPermanentlyBlocked {
+	return NO;
+}
+
+//: 6
+-(void)notePasscodeUnlockFailedWithError:(id)arg1 {
+	HBLogDebug(@"notePasscodeUnlockFailedWithError, %@ \n", arg1);
+	//HBLogDebug(@"arg2 belongs to %@", [arg1 class]);
+
+	//: arg2 = Error Domain=com.apple.springboardfoundation.mkb Code=-3 "(null)"
+	//: arg22 belongs to NSError 
+	%orig;
+}
+%end
+
+
+
 %hook SBFUserAuthenticationController
 
 //: Called user uses finger as passcode
@@ -187,9 +241,13 @@
 //:??? CORRECT 16 PASS: arg1: <SBFAuthenticationRequest: 0x174447140; type: 1; source: 0; handler: <__NSMallocBlock__: 0x174869b40>> arg2: (null)
 //:??? CORRECT 17 PASS:  arg1: <SBFAuthenticationRequest: 0x175a43f30; type: 1; source: 0; handler: <__NSMallocBlock__: 0x17427c8c0>> arg2: (null)
 -(long long)_evaluateAuthenticationAttempt:(id)arg1 outError:(id*)arg2 {
+	//%log;
 	long long val = %orig;
 	HBLogDebug(@"_evaluateAuthenticationAttempt, arg1: %@ arg2: %@", arg1, *arg2);
-	//%log;
+	//HBLogDebug(@"arg2 is %@", *arg2);
+	//HBLogDebug(@"arg2 belongs to %@", [*arg2 class]);
+	//: arg2 = Error Domain=com.apple.springboardfoundation.mkb Code=-3 "(null)"
+	//: arg2 belongs to NSError
 	return val;
 }
 
@@ -215,7 +273,11 @@
 
 -(void)_notifyClientsOfAuthenticationResult:(long long)arg1 forRequest:(id)arg2 error:(id)arg3 withResponder:(id)arg4 {
 	HBLogDebug(@"_notifyClientsOfAuthenticationResult, arg1: %lld, arg2: %@, arg3: %@, responder: %@", arg1, arg2, arg3, arg4);
+	//HBLogDebug(@"arg3 is %@", arg3);
+	//HBLogDebug(@"arg3 belongs to %@", [arg3 class]);
 	//%log;
+	//: arg3 = Error Domain=com.apple.springboardfoundation.mkb Code=-3 "(null)"
+	//: arg3 belongs to NSError
 	%orig;
 }
 // arg1 a 1 if failed passcode attempt is 2 if success
@@ -262,7 +324,12 @@
 //: CALLED AFTER 15TH ATTEMPT, arg1: <SBFAuthenticationRequest: 0x171854a00; type: 1; source: 0; handler: <__NSMallocBlock__: 0x17147ecc0>>, arg2: Error Domain=com.apple.springboardfoundation.mkb Code=-14 "(null)", arg3: (null)
 -(void)_handleFailedAuthentication:(id)arg1 error:(id)arg2 responder:(id)arg3 {
 	HBLogDebug(@"_handleFailedAuthentication, arg1: %@, arg2: %@, responder: %@", arg1, arg2, arg3);
+	//HBLogDebug(@"arg2 is %@", arg2);
+	//HBLogDebug(@"arg2 belongs to %@", [arg2 class]);
 	//%log;
+
+	//: arg2 = Error Domain=com.apple.springboardfoundation.mkb Code=-3 "(null)"
+	//: arg2 belongs to NSError
 	%orig;
 }
 //: CAlled after 2nd failed attempt, arg1: <SBFAuthenticationRequest: 0x1710427f0; type: 1; source: 0; handler: <__NSMallocBlock__: 0x171679f40>>, arg2: (null)
@@ -410,6 +477,10 @@
 -(long long)_evaluatePasscodeAttempt:(id)arg1 outError:(id*)arg2 {
 	long long val = %orig;
 	HBLogDebug(@"_evaluatePasscodeAttempt, arg1: %@, error: %@, returnVal: val: %lld", arg1, *arg2, val);
+	//HBLogDebug(@"arg2 is %@", *arg2);
+	//HBLogDebug(@"arg2 belongs to %@", [*arg2 class]);
+	//: arg2 = Error Domain=com.apple.springboardfoundation.mkb Code=-3 "(null)"
+	//: arg2 belongs to NSError
 	//%log;
 	return val;
 }
@@ -446,11 +517,15 @@
 	// HBLogDebug(@"arg2 belongs to %@", [val class]);
 	BOOL val = %orig;
 	HBLogDebug(@"thE return VALUE IS %d", val);
-
+	
 	HBLogDebug(@"arg2 is %@", *arg2);
 	HBLogDebug(@"arg2 belongs to %@", [*arg2 class]);
-*/
-	return val;
+	*/
+	//: arg2 =  Error Domain=com.apple.springboardfoundation.mkb Code=-3 "(null)"
+	//: *arg2 belongs to NSError
+	//return val;
+	//: MODIFIED
+	return %orig(arg1, NULL);
 }
 //: Gets called at startup after (_isTemporarilyBlocked) is called with a return val of 0.
 //: Gets called after "applicationDidFinishLaunching" (isAuthenticated) returns  NO.
@@ -511,7 +586,7 @@
 	%orig;
 }
 
-//: 6
+//: 7
 
 //: AFTER 13 ATTEMPT: arg1: <SBFUserAuthenticationModelSEP: 0x174251280; unblockTime: 2018-08-13 18:16:32 +0000; permanentlyBlocked: NO; pendingWipe: NO>
 //: NOTE that the unblockTime is one minute ahead after it was printed!!!
@@ -525,6 +600,9 @@
 -(void)deviceLockStateMayHaveChangedForModel:(id)arg1 {
 	//%log;
 	HBLogDebug(@"deviceLockStateMayHaveChangedForModel, arg1: %@", arg1);
+	//HBLogDebug(@"arg1 comes from,%@ ", [arg1 class]);
+
+	//: arg1 comes from SBFUserAuthenticationModelSEP
 	%orig;
 }
 //: Does what it says, at startup returns a value YES
