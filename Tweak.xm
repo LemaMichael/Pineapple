@@ -1,12 +1,7 @@
 
 @interface SBFUserAuthenticationController : NSObject
-+(BOOL)_isInGracePeriodState;
 +(BOOL)_isInBioUnlockState;
-+(long long)_extendedKeybagState;
--(void)dealloc;
 -(NSString *)description;
--(void)_clearBlockedState;
--(void)keybagDidUnlockForTheFirstTime:(id)arg1 ;
 -(id)publicDescription;
 -(void)keybag:(id)arg1 extendedStateDidChange:(id)arg2 ;
 -(BOOL)hasPasscodeSet;
@@ -16,8 +11,6 @@
 -(void)_setupPolicy:(id)arg1 ;
 -(void)_setHasBeenAuthenticatedOnceSinceBoot:(BOOL)arg1 ;
 -(void)_clearUnblockTimer;
--(void)_addAsFirstResponder:(id)arg1 ;
--(void)_removeAuthResponder:(id)arg1 ;
 -(BOOL)_processAuthenticationRequest:(id)arg1 responder:(id)arg2 ;
 -(long long)_evaluateAuthenticationAttempt:(id)arg1 outError:(id*)arg2 ;
 -(void)_notifyClientsOfAuthenticationResult:(long long)arg1 forRequest:(id)arg2 error:(id)arg3 withResponder:(id)arg4 ;
@@ -28,15 +21,12 @@
 -(void)_scheduleUnblockTimer;
 -(void)_setAuthState:(long long)arg1 ;
 -(void)_updateAuthenticationStateImmediately:(BOOL)arg1 forPublicReason:(id)arg2 ;
--(long long)_authenticationState;
 -(BOOL)_performNilPasscodeCheck;
--(void)_uncachePasscodeIfNecessary;
 -(void)_setSecureMode:(BOOL)arg1 postNotification:(BOOL)arg2 ;
 -(BOOL)_isUserAuthenticated;
 -(void)_revokeAuthenticationImmediately:(BOOL)arg1 forPublicReason:(id)arg2 ;
--(BOOL)_authenticateIfInGracePeriod;
 -(void)_updateAuthenticationStateForPublicReason:(id)arg1 ;
--(BOOL)isAssertionValid:(id)arg1 ;
+//-(BOOL)isAssertionValid:(id)arg1 ;
 -(void)notePasscodeEntryBegan;
 -(void)notePasscodeEntryCancelled;
 -(void)_notifyAboutTemporaryBlockStatusChanged;
@@ -44,7 +34,6 @@
 -(BOOL)_isPermanentlyBlocked;
 -(void)_refreshModelCacheIfNeeded;
 -(long long)_evaluatePasscodeAttempt:(id)arg1 outError:(id*)arg2 ;
--(long long)_evaluateMesaAttempt:(id)arg1 ;
 -(BOOL)_authenticateWithPasscodeData:(id)arg1 outError:(id*)arg2 ;
 -(void)_setup_runLoopObserverIfNecessary;
 -(void)_invalidateCachedPasscodeLockState;
@@ -53,101 +42,46 @@
 -(void)_updateHasPasscodeSetForLockState:(long long)arg1 ;
 -(BOOL)_shouldRevokeAuthenticationNow;
 -(void)_unblockTimerFired;
--(void)_updateAuthenticationStateAndFirstAuthenticationForLockState:(long long)arg1 ;
 -(void)_updateAuthenticationStateAndDateForLockState:(id)arg1 ;
 -(void)deviceLockModelRequestsDeviceWipe:(id)arg1 ;
 -(void)deviceLockStateMayHaveChangedForModel:(id)arg1 ;
 -(BOOL)hasAuthenticatedAtLeastOnceSinceBoot;
 -(BOOL)isAuthenticatedCached;
--(void)revokeAuthenticationImmediatelyForPublicReason:(id)arg1 ;
 -(void)revokeAuthenticationImmediatelyIfNecessaryForPublicReason:(id)arg1 ;
 -(void)revokeAuthenticationIfNecessaryForPublicReason:(id)arg1 ;
--(id)initWithAssertionManager:(id)arg1 policy:(id)arg2 ;
--(void)addAsFirstResponder:(id)arg1 ;
--(void)removeResponder:(id)arg1 ;
 -(void)processAuthenticationRequest:(id)arg1 responder:(id)arg2 ;
 -(void)processAuthenticationRequest:(id)arg1 ;
 -(void)addAuthenticationAssertion:(id)arg1 ;
 -(void)removeAuthenticationAssertion:(id)arg1 ;
--(double)_timeUntilUnblockedSinceReferenceDate;
--(void)_notifyOfAuthenticationSuccess;
+//-(double)_timeUntilUnblockedSinceReferenceDate;
 -(void)_addPrivateAuthenticationObserver:(id)arg1 ;
--(void)_removePrivateAuthenticationObserver:(id)arg1 ;
--(void)_setObservers:(id)arg1 ;
 -(NSDate *)lastRevokedAuthenticationDate;
 -(void)setHasPasscodeSet:(BOOL)arg1 ;
--(id)_policy;
 -(void)_setPolicy:(id)arg1 ;
--(id)_lastIncorrectPasscodeAttempt;
--(void)_setLastIncorrectPasscodeAttempt:(id)arg1 ;
--(id)_assertionManager;
--(void)_setAssertionManager:(id)arg1 ;
--(id)_transientAuthCheckingAssertion;
--(void)_setTransietAuthCheckingAssertion:(id)arg1 ;
 -(id)_responders;
--(void)_setResponders:(id)arg1 ;
-//-(CFRunLoopObserverRef)_runLoopObserver;
-//-(void)_setRunLoopObserver:(CFRunLoopObserverRef)arg1 ;
--(id)_unblockTimer;
--(void)_setUnblockTimer:(id)arg1 ;
--(void)_setAuthenticationState:(long long)arg1 ;
--(BOOL)_lastAuthStateWasAuthenticated;
--(void)_setLastAuthStateWasAuthenticated:(BOOL)arg1 ;
--(BOOL)_shouldFetchAuthenticationState;
--(void)_setShouldFetchAuthenticationState:(BOOL)arg1 ;
--(BOOL)_isInSecureMode;
--(void)_setInSecureMode:(BOOL)arg1 ;
--(BOOL)_okToSendNotifications;
--(BOOL)_hasBeenAuthenticatedOnceSinceBoot;
+//-(id)_unblockTimer;
+//-(void)_setUnblockTimer:(id)arg1 ;
 -(BOOL)isAuthenticated;
--(id)_observers;
 -(void)_setModel:(id)arg1 ;
 -(id)descriptionWithMultilinePrefix:(id)arg1 ;
--(id)succinctDescription;
 -(id)succinctDescriptionBuilder;
 -(id)descriptionBuilderWithMultilinePrefix:(id)arg1 ;
 -(id)_model;
 @end
 %hook SBFUserAuthenticationController
-//: NOT SURE WHEN CALLED
-+(BOOL)_isInGracePeriodState{
-	BOOL val = %orig;
-	HBLogDebug(@"_isInGracePeriodState %d", val);
-	return val;
-}
+
 //: Called user uses finger as passcode
 +(BOOL)_isInBioUnlockState{
 	BOOL val = %orig;
 	HBLogDebug(@"_isInBioUnlockState %d", val);
 	return val;
 }
-//: NOT SURE WHEN CALLED
-+(long long)_extendedKeybagState {
-	long long val = %orig;
-	HBLogDebug(@"_extendedKeybagState %lld", val);
-	return val;
-}
-//: NOT SURE WHEN CALLED
--(void)dealloc {
-	HBLogDebug(@"This class is being deallocated");
-	%orig;
-}
+
 //: Start up val returns: < SBFUserAuthenticationController: 0x1744e1580; authState: Revoked; passcodeSet: YES>
 -(NSString *)description {
 	NSString *val = %orig;
 	HBLogDebug(@"description %@", val);
 	return val;
-}
-//: NOT SURE WHEN CALLED
--(void)_clearBlockedState {
-	HBLogDebug(@"_clearBlockedState");
-	%orig;
-}
-//: NOT SURE WHEN CALLED
--(void)keybagDidUnlockForTheFirstTime:(id)arg1 {
-	id val = arg1;
-	HBLogDebug(@"keybagDidUnlockForTheFirstTime, arg1: %@", val);
-	%orig;
 }
 
 //: Start up val: <SBFUserAuthenticationController: 0x1742f5000; authState: Revoked; hasPasscodeSet: YES; revokedAuthDate: 2018-08-13 11:39:57 -0400; model: ...
@@ -213,20 +147,7 @@
 	//%log;
 	%orig;
 }
-//: NOT SURE WHEN CALLED
--(void)_addAsFirstResponder:(id)arg1 {
-	id val = arg1;
-	HBLogDebug(@"_addAsFirstResponder, arg1: %@", val);
-	//%log;
-	%orig;
-}
-//: NOT SURE WHEN CALLED
--(void)_removeAuthResponder:(id)arg1 {
-	id val = arg1;
-	HBLogDebug(@"_removeAuthResponder, arg1: %@", val);
-	//%log;
-	%orig;
-}
+
 //: This is called after (_boolForAuthenticationResult), arg1: <SBFAuthenticationRequest: 0x17105fb00; type: 1; source: 0; handler: <__NSMallocBlock__: 0x171275340>>, arg2: (null)
 //: UPDATE: 2ND FAILED ATTEMPT, arg1: <SBFAuthenticationRequest: 0x1710427f0; type: 1; source: 0; handler: <__NSMallocBlock__: 0x171679f40>>, arg2: (null)
 //: UPDATE: 3RD FAILED ATTEMPT, arg1: <SBFAuthenticationRequest: 0x17444d470; type: 1; source: 0; handler: <__NSMallocBlock__: 0x174a61680>> arg2: (null)
@@ -318,7 +239,6 @@
 	BOOL val = %orig;
 	HBLogDebug(@"_boolForAuthenticationResult arg1: %lld, return val: %d", arg1, val);
 	//%log;
-	//[self _clearBlockedState];
 	return val;
 }
 //: called when pass is correct
@@ -344,7 +264,6 @@
 	HBLogDebug(@"_handleFailedAuthentication, arg1: %@, arg2: %@, responder: %@", arg1, arg2, arg3);
 	//%log;
 	%orig;
-	//[self _clearBlockedState];
 }
 //: CAlled after 2nd failed attempt, arg1: <SBFAuthenticationRequest: 0x1710427f0; type: 1; source: 0; handler: <__NSMallocBlock__: 0x171679f40>>, arg2: (null)
 //: CALLED AFTER 3RD FAILED attempt, arg1: <SBFAuthenticationRequest: 0x17444d470; type: 1; source: 0; handler: <__NSMallocBlock__: 0x174a61680>>, arg2: (null)
@@ -372,7 +291,6 @@
 }
 //: AFTER THE 16 CORRECT PASS, ARG1: 1
 //: AFTER THE 17 CORRECT PASS, ARG1: 1
-
 -(void)_setAuthState:(long long)arg1  {
 	HBLogDebug(@"_setAuthState, arg1 %lld", arg1);
 	//%log;
@@ -388,24 +306,12 @@
 	HBLogDebug(@"_updateAuthenticationStateImmediately, arg1 %d, reason: %@", arg1, arg2);
 	%orig;
 }
-//: NOT SURE WHEN CALLED
--(long long)_authenticationState {
-	long long val = %orig;
-	HBLogDebug(@"_authenticationState, return val: %lld", val);
-	//%log;
-	return val;
-}
+
 //: Called when user uses finger as passcode
 -(BOOL)_performNilPasscodeCheck{
 	BOOL val = %orig;
 	HBLogDebug(@"_performNilPasscodeCheck return val: %d", val);
 	return val;
-}
-//: NOT SURE WHEN CALLED
--(void)_uncachePasscodeIfNecessary{
-	HBLogDebug(@"_uncachePasscodeIfNecessary");
-	//%log;
-	%orig;
 }
 
 //: arg1 is 1 and arg2 is 0 at startup
@@ -430,25 +336,13 @@
 	HBLogDebug(@"_revokeAuthenticationImmediately, arg1: %d, reason %@", val, arg2);
 	%orig;
 }
-//: NOT SURE WHEN CALLED
--(BOOL)_authenticateIfInGracePeriod {
-	BOOL val = %orig;
-	HBLogDebug(@"_authenticateIfInGracePeriod, %d", val);
-	//%log;
-	return val;
-}
+
 //: Called after removeAuthenticationAssertion(), arg1 is remove authentication assertion: <SBFAuthenticationAssertion: 0x170e4b5e0; reason: DashBoardAttemptUnlock; type: SustainGracePeriod; valid: NO>
 -(void)_updateAuthenticationStateForPublicReason:(id)arg1 {
 	HBLogDebug(@"_updateAuthenticationStateForPublicReason, arg1: %@", arg1);
 	//%log;
 	 %orig;
 }
-//: THIS PUTS OUR PHONE IN A LOOP NOT SURE WHY
-// -(BOOL)isAssertionValid:(id)arg1 {
-// 	//%orig;
-// 	HBLogDebug(@"isAssertionValid, arg1: %@", arg1);
-// 	return YES;
-// }
 
 //: Gets called whenever user taps a number
 -(void)notePasscodeEntryBegan {
@@ -519,13 +413,7 @@
 	//%log;
 	return val;
 }
-//:  NOT SURE WHEN CALLED
--(long long)_evaluateMesaAttempt:(id)arg1 {
-	long long val = %orig;
-	HBLogDebug(@"_evaluateMesaAttempt, arg1: %@, returnVal: %lld", arg1, val);
-	//%log;
-	return val;
-}
+
 //: 1
 
 //: IMPORTANT
@@ -610,12 +498,6 @@
 	HBLogDebug(@"_unblockTimerFired");
 	%orig;
 }
-//:  NOT SURE WHEN CALLED
--(void)_updateAuthenticationStateAndFirstAuthenticationForLockState:(long long)arg1 {
-	//%log;
-	HBLogDebug(@"_updateAuthenticationStateAndFirstAuthenticationForLockState, arg1: %lld", arg1);
-	%orig;
-}
 //: CALLED AFTER 17 CORRECT ATTEMPT: arg1: <SBFMobileKeyBagState: 0x170204ab0; lockState: Unlocked; isEffectivelyLocked: NO; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
 -(void)_updateAuthenticationStateAndDateForLockState:(id)arg1 {
 	//%log;
@@ -658,18 +540,11 @@
 //: Returns 0 at the 14th attempt
 //: AFTER CORRECT 16 PASS, THE RETURN VAL IS 1
 //: AFTER CORRECT 17 PASS, THE RETURN VAL IS 1
-
 -(BOOL)isAuthenticatedCached {
 	BOOL val = %orig;
 	//%log;
 	HBLogDebug(@"isAuthenticatedCached, returnVal: %d", val);
 	return val;
-}
-//:  NOT SURE WHEN CALLED
--(void)revokeAuthenticationImmediatelyForPublicReason:(id)arg1 {
-	//%log;
-	HBLogDebug(@"revokeAuthenticationImmediatelyForPublicReason, arg1: %@", arg1);
-	%orig;
 }
 //: Startup val for arg1: StartupTransitionToLockOut
 -(void)revokeAuthenticationImmediatelyIfNecessaryForPublicReason:(id)arg1 {
@@ -678,31 +553,10 @@
 	%orig;
 }
 //: Called after "applicationDidFinishLaunching", arg1: Lock button
-
 //: UPDATE: This gets called after lockscreen locks
-
 -(void)revokeAuthenticationIfNecessaryForPublicReason:(id)arg1 {
 	//%log;
 	HBLogDebug(@"revokeAuthenticationIfNecessaryForPublicReason, arg1: %@", arg1);
-	%orig;
-}
-//:  NOT SURE WHEN CALLED
--(id)initWithAssertionManager:(id)arg1 policy:(id)arg2  {
-	id val = %orig;
-	//%log;
-	HBLogDebug(@"initWithAssertionManager, arg1: %@, arg2: %@", arg1, arg2);
-	return val;
-}
-//:  NOT SURE WHEN CALLED
--(void)addAsFirstResponder:(id)arg1 {
-	//%log;
-	HBLogDebug(@"addAsFirstResponder, arg1: %@", arg1);
-	%orig;
-}
-//:  NOT SURE WHEN CALLED
--(void)removeResponder:(id)arg1 {
-	//%log;
-	HBLogDebug(@"removeResponder, arg1: %@", arg1);
 	%orig;
 }
 //: Gets called after "applicationDidFinishLaunching", arg1: <SBFAuthenticationRequest: 0x171449b10; type: 1; source: 0; handler: <__NSMallocBlock__: 0x170e7e040>> & arg2: (null)
@@ -742,26 +596,10 @@
 	HBLogDebug(@"_timeUntilUnblockedSinceReferenceDate, returnVal: %f", val);
 	return val;
 }
-//:  NOT SURE WHEN CALLED
--(void)_notifyOfAuthenticationSuccess {
-	//%log;
-	HBLogDebug(@"_notifyOfAuthenticationSuccess");
-	%orig;
-}
 //: at startup arg1 is: <SBFDeviceLockOutController: 0x170235560; lockedOut: YES; thermalProvider: <SBThermalController: 0x1702dd1f0; ThermalLevel: None;
 //: Also at startup arg1 is: <SBLockScreenManager: 0x170153400; UI Locked: NO; Allows DisablePasscodeLockAssertion: NO; Allow Locking/Unlocking: NO>
 -(void)_addPrivateAuthenticationObserver:(id)arg1 {
 	HBLogDebug(@"_addPrivateAuthenticationObserver, arg1: %@", arg1);
-	%orig;
-}
-//:  NOT SURE WHEN CALLED
--(void)_removePrivateAuthenticationObserver:(id)arg1 {
-	HBLogDebug(@"_removePrivateAuthenticationObserver, arg1: %@", arg1);
-	%orig;
-}
-//:  NOT SURE WHEN CALLED
--(void)_setObservers:(id)arg1 {
-	HBLogDebug(@"_setObservers, arg1: %@", arg1);
 	%orig;
 }
 //: Prints when the last valid password entered was
@@ -776,62 +614,6 @@
 	%orig;
 }
 //:  NOT SURE WHEN CALLED
--(id)_policy {
-	id val = %orig;
-	HBLogDebug(@"_policy, returnVal: %@", val);
-	return val;
-}
-//:  NOT SURE WHEN CALLED
--(void)_setPolicy:(id)arg1 {
-	HBLogDebug(@"_setPolicy, arg1: %@", arg1);
-	%orig;
-}
-//:  NOT SURE WHEN CALLED
--(id)_lastIncorrectPasscodeAttempt {
-	id val = %orig;
-	HBLogDebug(@"_lastIncorrectPasscodeAttempt, returnVal: %@", val);
-	return val;
-}
-//:  NOT SURE WHEN CALLED
--(void)_setLastIncorrectPasscodeAttempt:(id)arg1 {
-	id val = arg1;
-	HBLogDebug(@"_setLastIncorrectPasscodeAttempt, arg1: %@", val);
-	%orig;
-}
-//:  NOT SURE WHEN CALLED
--(id)_assertionManager {
-	id val = %orig;
-	HBLogDebug(@"_assertionManager, returnVal: %@", val);
-	return val;
-}
-//:  NOT SURE WHEN CALLED
--(void)_setAssertionManager:(id)arg1  {
-	HBLogDebug(@"_setAssertionManager, arg1: %@", arg1);
-	%orig;
-}
-//:  NOT SURE WHEN CALLED
--(id)_transientAuthCheckingAssertion {
-	id val = %orig;
-	HBLogDebug(@"_transientAuthCheckingAssertion, returnVal: %@", val);
-	return val;
-}
-//:  NOT SURE WHEN CALLED
--(void)_setTransietAuthCheckingAssertion:(id)arg1 {
-	HBLogDebug(@"_setTransietAuthCheckingAssertion, arg1: %@", arg1);
-	%orig;
-}
-//:  NOT SURE WHEN CALLED
--(id)_responders {
-	id val = %orig;
-	HBLogDebug(@"_responders, returnVal: %@", val);
-	return val;
-}
-//:  NOT SURE WHEN CALLED
--(void)_setResponders:(id)arg1 {
-	HBLogDebug(@"_setResponders, arg1: %@", arg1);
-	%orig;
-}
-//:  NOT SURE WHEN CALLED
 -(id)_unblockTimer {
 	id val = %orig;
 	HBLogDebug(@"_unblockTimer, returnVal: %@", val);
@@ -842,70 +624,12 @@
 	HBLogDebug(@"_setUnblockTimer, arg1 %@", arg1);
 	%orig;
 }
-//:  NOT SURE WHEN CALLED
--(void)_setAuthenticationState:(long long)arg1  {
-	HBLogDebug(@"_setAuthenticationState, arg1 %lld", arg1);
-	%orig;
-
-}
-//:  NOT SURE WHEN CALLED
--(BOOL)_lastAuthStateWasAuthenticated {
-	BOOL val = %orig;
-	HBLogDebug(@"_lastAuthStateWasAuthenticated, returnVal: %d", val);
-	return val;
-}
-//:  NOT SURE WHEN CALLED
--(void)_setLastAuthStateWasAuthenticated:(BOOL)arg1 {
-	HBLogDebug(@"_setLastAuthStateWasAuthenticated, arg1 %d", arg1);
-	%orig;
-}
-//:  NOT SURE WHEN CALLED
--(BOOL)_shouldFetchAuthenticationState {
-	BOOL val = %orig;
-	HBLogDebug(@"_shouldFetchAuthenticationState, returnVal: %d", val);
-	return val;
-}
-//:  NOT SURE WHEN CALLED
--(void)_setShouldFetchAuthenticationState:(BOOL)arg1  {
-	HBLogDebug(@"_setShouldFetchAuthenticationState, arg1 %d", arg1);
-	%orig;
-}
-//:  NOT SURE WHEN CALLED
--(BOOL)_isInSecureMode {
-	BOOL val = %orig;
-	HBLogDebug(@"_isInSecureMode, returnVal: %d", val);
-	return val;
-}
-//:  NOT SURE WHEN CALLED
--(void)_setInSecureMode:(BOOL)arg1  {
-	HBLogDebug(@"_setInSecureMode, arg1 %d", arg1);
-	%orig;
-}
-//:  NOT SURE WHEN CALLED
--(BOOL)_okToSendNotifications {
-	BOOL val = %orig;
-	HBLogDebug(@"_okToSendNotifications, returnVal: %d", val);
-	return val;
-}
-//:  NOT SURE WHEN CALLED
--(BOOL)_hasBeenAuthenticatedOnceSinceBoot {
-	BOOL val = %orig;
-	HBLogDebug(@"_hasBeenAuthenticatedOnceSinceBoot, returnVal: %d", val);
-	return val;
-}
 //: At startup this returns a NO.
 //: AT 16 CORRECT PASS, THIS RETURNS A YES
 //: AT 17 CORRECT PASS, THIS RETURNS A YES
-
 -(BOOL)isAuthenticated {
 	BOOL val = %orig;
 	HBLogDebug(@"isAuthenticated, returnVal: %d", val);
-	return val;
-}
-//: NOT SURE WHEN CALLED
--(id)_observers {
-	id val = %orig;
-	HBLogDebug(@"_observers, returnVal: %@", val);
 	return val;
 }
 //: Called at startup: arg1 <SBFUserAuthenticationModelSEP: 0x170648370; unblockTime: 0000-12-30 00:00:00 +0000; permanentlyBlocked: NO; pendingWipe: NO>
@@ -920,12 +644,6 @@
 	HBLogDebug(@"descriptionWithMultilinePrefix, returnVal: %@", val);
 	return val;
 }
-//: NOT SURE WHEN CALLED
--(id)succinctDescription {
-	id val = %orig;
-	HBLogDebug(@"succinctDescription, returnVal: %@", val);
-	return val;
-}
 //: Start up val is of type: <BSDescriptionBuilder: 0x17486b440>
 -(id)succinctDescriptionBuilder {
 	id val = %orig;
@@ -936,12 +654,6 @@
 -(id)descriptionBuilderWithMultilinePrefix:(id)arg1 {
 	id val = %orig;
 	HBLogDebug(@"descriptionBuilderWithMultilinePrefix, returnVal: %@", val);
-	return val;
-}
-//: NOT SURE WHEN CALLED
--(id)_model {
-	id val = %orig;
-	HBLogDebug(@"_model, returnVal: %@", val);
 	return val;
 }
 
