@@ -86,8 +86,8 @@
 -(void)_setTransietAuthCheckingAssertion:(id)arg1 ;
 -(id)_responders;
 -(void)_setResponders:(id)arg1 ;
--(CFRunLoopObserverRef)_runLoopObserver;
--(void)_setRunLoopObserver:(CFRunLoopObserverRef)arg1 ;
+//-(CFRunLoopObserverRef)_runLoopObserver;
+//-(void)_setRunLoopObserver:(CFRunLoopObserverRef)arg1 ;
 -(id)_unblockTimer;
 -(void)_setUnblockTimer:(id)arg1 ;
 -(void)_setAuthenticationState:(long long)arg1 ;
@@ -181,7 +181,7 @@
 -(void)_establishAuthenticationStateForInit:(long long)arg1 {
 	long long val = arg1;
 	HBLogDebug(@"_establishAuthenticationStateForInit, arg1: %lld", val);
-	%log;
+	//%log;
 	%orig;
 }
 -(void)_setupPolicy:(id)arg1 {
@@ -670,7 +670,7 @@
 	return val;
 }
 -(void)_setModel:(id)arg1 {
-	HBLogDebug(@"_setModel, arg1 %d", arg1);
+	HBLogDebug(@"_setModel, arg1 %@", arg1);
 	%orig;
 }
 -(id)descriptionWithMultilinePrefix:(id)arg1 {
