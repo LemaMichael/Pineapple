@@ -1,3 +1,5 @@
+#import <SpringBoard/SBAbstractSpringBoardDefaultDomain.h>
+#import <BaseBoard/BSAbstractDefaultDomain.h>
 
 @interface SBFUserAuthenticationController : NSObject
 +(BOOL)_isInBioUnlockState;
@@ -80,8 +82,123 @@
 -(void)clearBlockedState;
 -(NSString *)description;
 -(void)notePasscodeUnlockFailedWithError:(id)arg1 ;
-
 @end
+
+@interface SBSecurityDefaults: SBAbstractSpringBoardDefaultDomain
+-(void)setBlockStateGeneration:(NSNumber *)arg1 ;
+-(NSNumber *)blockStateGeneration;
+-(void)setAllowLockAndUnlockWithCase:(BOOL)arg1 ;
+-(BOOL)allowLockAndUnlockWithCase;
+-(void)setPendingDeviceWipe:(NSNumber *)arg1 ;
+-(id)isPendingDeviceWipe;
+-(void)setDontLockEver:(BOOL)arg1 ;
+-(BOOL)dontLockEver;
+-(void)setDeviceWipeEnabled:(BOOL)arg1 ;
+-(BOOL)isDeviceWipeEnabled;
+-(void)setBlockedForThermal:(BOOL)arg1 ;
+-(BOOL)isBlockedForThermal;
+-(void)setBlockedForPasscode:(NSNumber *)arg1 ;
+-(id)isBlockedForPasscode;
+-(void)setUnblockTimeFromReferenceDate:(NSNumber *)arg1 ;
+-(NSNumber *)unblockTimeFromReferenceDate;
+-(void)setNumberOfFailedPasscodeAttempts:(NSNumber *)arg1 ;
+-(NSNumber *)numberOfFailedPasscodeAttempts;
+//-(void)_bindAndRegisterDefaults; THIS CRASHED my phone
+-(id)deviceLockDefaultForKey:(id)arg1 ;
+-(void)setDeviceLockDefault:(id)arg1 forKey:(id)arg2 ;
+@end
+
+
+%hook SBSecurityDefaults
+-(void)setBlockStateGeneration:(NSNumber *)arg1  {
+	HBLogDebug(@"setBlockStateGeneration, arg1: %@", arg1);
+}
+-(NSNumber *)blockStateGeneration {
+	NSNumber *val = %orig; 
+	HBLogDebug(@"blockStateGeneration, returnVal: %@",  val);
+	return val;
+}
+-(void)setAllowLockAndUnlockWithCase:(BOOL)arg1 {
+	HBLogDebug(@"setAllowLockAndUnlockWithCase, arg1: %d", arg1);
+}
+-(BOOL)allowLockAndUnlockWithCase {
+	BOOL val = %orig;
+	HBLogDebug(@"allowLockAndUnlockWithCase, returnVal: %d", val);
+	return val;
+}
+-(void)setPendingDeviceWipe:(NSNumber *)arg1 {
+	HBLogDebug(@"setBlockStateGeneration, arg1: %@", arg1);
+}
+-(id)isPendingDeviceWipe {
+	id val = %orig;
+	HBLogDebug(@"isPendingDeviceWipe, returnVal: %@", val);
+	return val;
+}
+-(void)setDontLockEver:(BOOL)arg1  {
+	HBLogDebug(@"setDontLockEver, arg1: %d", arg1);
+}
+-(BOOL)dontLockEver {
+	BOOL val = %orig;
+	HBLogDebug(@"dontLockEver, returnVal: %d", val);
+	return val;
+}
+-(void)setDeviceWipeEnabled:(BOOL)arg1 {
+	HBLogDebug(@"setDeviceWipeEnabled, arg1: %d", arg1);
+
+}
+-(BOOL)isDeviceWipeEnabled {
+	BOOL val = %orig;
+	HBLogDebug(@"isDeviceWipeEnabled, returnVal: %d", val);
+	return val;
+}
+-(void)setBlockedForThermal:(BOOL)arg1 {
+	HBLogDebug(@"setBlockedForThermal, arg1: %d", arg1);
+
+}
+-(BOOL)isBlockedForThermal {
+	BOOL val = %orig;
+	HBLogDebug(@"isBlockedForThermal, returnVal: %d", val);
+	return val;
+}
+-(void)setBlockedForPasscode:(NSNumber *)arg1 {
+	HBLogDebug(@"setBlockedForPasscode, arg1: %@", arg1);
+
+}
+-(id)isBlockedForPasscode {
+	id val = %orig;
+	HBLogDebug(@"isBlockedForPasscode, returnVal: %@", val);
+	return val;
+}
+-(void)setUnblockTimeFromReferenceDate:(NSNumber *)arg1 {
+	HBLogDebug(@"setUnblockTimeFromReferenceDate, arg1: %@", arg1);
+}
+-(NSNumber *)unblockTimeFromReferenceDate {
+	NSNumber *val = %orig; 
+	HBLogDebug(@"unblockTimeFromReferenceDate, returnVal: %@",  val);
+	return val;
+}
+-(void)setNumberOfFailedPasscodeAttempts:(NSNumber *)arg1  {
+	HBLogDebug(@"setNumberOfFailedPasscodeAttempts, arg1: %@", arg1);
+
+}
+-(NSNumber *)numberOfFailedPasscodeAttempts{
+	NSNumber *val = %orig; 
+	HBLogDebug(@"numberOfFailedPasscodeAttempts, return val: %@",  val);
+	return val;
+}
+// -(void)_bindAndRegisterDefaults{
+// 	HBLogDebug(@"_bindAndRegisterDefaults");
+// }
+-(id)deviceLockDefaultForKey:(id)arg1 {
+	id val = %orig;
+	HBLogDebug(@"deviceLockDefaultForKey, arg1: %@,  returnVal: %@", arg1, val);
+	return val;
+}
+-(void)setDeviceLockDefault:(id)arg1 forKey:(id)arg2 {
+	HBLogDebug(@"setDeviceLockDefault, arg1: %@, key: %@", arg1, arg2);
+}
+
+%end 
 
 
 %hook SBFUserAuthenticationModelSEP
@@ -96,13 +213,12 @@
 // 555890190.815751 is the new val
 
 -(double)timeUntilUnblockedSinceReferenceDate{
-	double time = MSHookIvar<double>(self, "_unblockTime");
-	HBLogDebug(@"_unblockTime, %f \n", time);
-	MSHookIvar<double>(self, "_unblockTime") = 0.000000;
+	MSHookIvar<double>(self, "_unblockTime") = -1.0;
+
 	double val = %orig;
 	HBLogDebug(@"timeUntilUnblockedSinceReferenceDate: %f \n", val);
 
-	return 0.000000;
+	return -1.0;
 
 }
 -(BOOL)isPermanentlyBlocked {
@@ -111,6 +227,11 @@
 
 //: 6
 -(void)notePasscodeUnlockFailedWithError:(id)arg1 {
+	//: MOVED from timeUntilUnblockedSinceReferenceDate to here.
+	double time = MSHookIvar<double>(self, "_unblockTime");
+	HBLogDebug(@"_unblockTime, %f \n", time);
+	MSHookIvar<double>(self, "_unblockTime") = -1.0;
+
 	HBLogDebug(@"notePasscodeUnlockFailedWithError, %@ \n", arg1);
 	//HBLogDebug(@"arg2 belongs to %@", [arg1 class]);
 
@@ -123,7 +244,8 @@
 
 
 %hook SBFUserAuthenticationController
-
+static BOOL hasBeenCalledBefore = NO;
+static id defaultVal; 
 //: Called user uses finger as passcode
 +(BOOL)_isInBioUnlockState{
 	BOOL val = %orig;
@@ -598,6 +720,7 @@
 //: NOTE THE unblockTime has been reset!!!
 //: ?? AFTER 17 CORRECT ATTEMPT: arg1: <SBFUserAuthenticationModelSEP: 0x174455fc0; unblockTime: 0000-12-30 00:00:00 +0000; permanentlyBlocked: NO; pendingWipe: NO>
 -(void)deviceLockStateMayHaveChangedForModel:(id)arg1 {
+	%orig(defaultVal);
 	//%log;
 	HBLogDebug(@"deviceLockStateMayHaveChangedForModel, arg1: %@", arg1);
 	//HBLogDebug(@"arg1 comes from,%@ ", [arg1 class]);
@@ -710,10 +833,18 @@
 	HBLogDebug(@"isAuthenticated, returnVal: %d", val);
 	return val;
 }
+
 //: Called at startup: arg1 <SBFUserAuthenticationModelSEP: 0x170648370; unblockTime: 0000-12-30 00:00:00 +0000; permanentlyBlocked: NO; pendingWipe: NO>
 -(void)_setModel:(id)arg1 {
 	//: arg1 is a SBUserAuthenticationModelSEP that contains an unblockTime, permantlyBlocked, pendingWipe
 	HBLogDebug(@"_setModel, arg1 %@", arg1);
+
+	if (!hasBeenCalledBefore) {
+		defaultVal = arg1;
+		hasBeenCalledBefore = YES;
+		HBLogDebug(@"I should only be called once...............");
+	}
+
 	%orig;
 }
 //: Start up val is of:  <SBFUserAuthenticationController: 0x1742f5000; authState: Revoked; passcodeSet: YES> 
