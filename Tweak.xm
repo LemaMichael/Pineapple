@@ -1,4 +1,60 @@
-@interface SBFUserAuthenticationController : NSObject
+//: forward declaring classes
+@class SBFMobileKeyBagState;
+@class PCPersistentTimer;
+
+@interface SBFMobileKeyBag : NSObject {
+
+	//NSObject*<OS_dispatch_queue> _calloutQueue;
+	//NSObject*<OS_dispatch_queue> _queue;
+	//NSMutableArray* _queue_observerStateChangedCallbackBlocks;
+	//NSHashTable* _queue_observers;
+	BOOL _queue_hasPasscodeSet;
+	BOOL _queue_hasUnlockedSinceBoot;
+	int _stateChangedNotifyToken;
+	int _firstUnlockNotification;
+
+}
++(id)sharedInstance;
+-(id)init;
+-(void)dealloc;
+//: LOOk into this
+-(SBFMobileKeyBagState *)state;
+-(void)addObserver:(id)arg1 ;
+-(void)removeObserver:(id)arg1 ;
+-(void)_queue_handleKeybagStatusChanged;
+-(void)_queue_firstUnlockOccurred;
+-(id)_queue_lockStateExtended:(BOOL)arg1 ;
+-(void)_queue_setHasPasscodeIfNecessary:(id)arg1 ;
+-(void)_queue_createStashBag:(id)arg1 ;
+-(void)createStashBag:(id)arg1 completion:(/*^block*/id)arg2 completionQueue:(id)arg3 ;
+-(BOOL)_queue_verifyExpectedStashState:(long long)arg1 ;
+-(void)lockSkippingGracePeriod:(BOOL)arg1 ;
+-(BOOL)unlockWithPasscode:(id)arg1 error:(id*)arg2 ;
+-(BOOL)hasPasscodeSet;
+-(void)createStashBag:(id)arg1 completion:(/*^block*/id)arg2 ;
+-(BOOL)hasBeenUnlockedSinceBoot;
+-(SBFMobileKeyBagState *)extendedState;
+-(BOOL)beginRecovery:(id)arg1 error:(id*)arg2 ;
+-(void)waitForUnlockWithTimeout:(float)arg1 ;
+@end
+
+@interface SBFUserAuthenticationController : NSObject {
+	SBFMobileKeyBag* _keybag;
+	//NSMutableArray* _responders;
+	//NSHashTable* _observers;
+	//: Might look into this further 
+	//id<SBFUserAuthenticationModel> _model;
+	//long long _authenticationState;
+	NSDate* _lastRevokedAuthenticationDate;
+	//SBFAuthenticationAssertionManager* _assertionManager;
+	//id<SBFAuthenticationPolicy> _policy;
+	NSString* _lastIncorrectPasscodeAttempt;
+	//SBFAuthenticationAssertion* _transientAuthCheckingAssertion;
+	//CFRunLoopObserverRef _runLoopObserver;
+	PCPersistentTimer* _unblockTimer;
+	long long _cachedAuthFlag;
+	BOOL _inSecureMode;
+}
 +(BOOL)_isInBioUnlockState;
 -(NSString *)description;
 -(id)publicDescription;
@@ -72,12 +128,12 @@
 	double _unblockTime;
 
 } 
--(void)refreshBlockedState;
+//-(void)refreshBlockedState;
 -(BOOL)isTemporarilyBlocked;
 -(double)timeUntilUnblockedSinceReferenceDate;
 -(BOOL)isPermanentlyBlocked;
--(void)clearBlockedState;
--(NSString *)description;
+//-(void)clearBlockedState;
+//-(NSString *)description;
 -(void)notePasscodeUnlockFailedWithError:(id)arg1 ;
 @end
 
