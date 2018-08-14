@@ -2,8 +2,96 @@
 @class SBFMobileKeyBagState;
 @class PCPersistentTimer;
 
-@interface SBFMobileKeyBag : NSObject {
+@interface SBFMobileKeyBagState : NSObject
+//:<SBFMobileKeyBagState: 0x17401e570; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
+-(id)init;
+-(BOOL)isEqual:(id)arg1 ;
+-(unsigned long long)hash;
+-(NSString *)description;
+-(id)copyWithZone:(NSZone*)arg1 ;
+-(id)mutableCopyWithZone:(NSZone*)arg1 ;
+-(unsigned long long)failedAttemptCount;
+-(BOOL)isEffectivelyLocked;
+-(id)publicDescription;
+-(id)initWithMKBLockStateInfo:(id)arg1 ;
+-(BOOL)permanentlyBlocked;
+-(double)backOffTime;
+-(BOOL)shouldWipe;
+-(BOOL)recoveryRequired;
+-(BOOL)recoveryPossible;
+-(long long)escrowCount;
+-(BOOL)recoveryEnabled;
+-(id)descriptionWithMultilinePrefix:(id)arg1 ;
+-(id)succinctDescription;
+-(id)succinctDescriptionBuilder;
+-(id)descriptionBuilderWithMultilinePrefix:(id)arg1 ;
+-(long long)lockState;
+@end
 
+%hook SBFMobileKeyBagState
+//: Called at boot, returnsVal: 2 (Seems to be the value 2 throughout)
+-(long long)lockState {
+	long long val = %orig;
+	HBLogDebug(@"lockState, returnVal: %lld", val);
+	return val;
+}
+//: Called at boot, returnVal: 1 (Seems to be the val 1 throughout)
+-(BOOL)isEffectivelyLocked {
+	BOOL val = %orig;
+	HBLogDebug(@"isEffectivelyLocked, returnVal: %d", val);
+	return val;
+}
+//: Called at boot, returnVal: 0
+-(BOOL)permanentlyBlocked {
+	BOOL val = %orig;
+	HBLogDebug(@"permanentlyBlocked, returnVal: %d", val);
+	return NO;
+}
+//: Called at boot, returnVal: 0
+-(BOOL)shouldWipe {
+	BOOL val = %orig;
+	HBLogDebug(@"shouldWipe, returnVal: %d", val);
+	return NO;
+}
+//: Called at boot, returnVal: 0
+-(BOOL)recoveryRequired {
+	BOOL val = %orig;
+	HBLogDebug(@"recoveryRequired, returnVal: %d", val);
+	return val;
+}
+//: Called at boot, returnVal: 1
+-(BOOL)recoveryPossible {
+	BOOL val = %orig;
+	HBLogDebug(@"recoveryPossible, returnVal: %d", val);
+	return val;
+}
+//: Called at boot, returnVal: 0.0
+//: When wrong pass is entered, the first backOffTime: 59.000000
+//: When wrong pass is entered twice, backOffTime:  299.000000
+-(double)backOffTime {
+	double val = %orig; 
+	HBLogDebug(@"backOffTime, returnVal: %f", val);
+	return 0.000000;
+}
+//: Called at boot, returnVal: 0
+//: When wrong pass is entered, the failedAttemptCount: 5
+//: When wrong pass is entered twice, the failedAttemptCount: 6
+-(unsigned long long)failedAttemptCount {
+	unsigned long long val = %orig;
+	HBLogDebug(@"failedAttemptCount, returnVal: %lld", val);
+	return 0;
+}
+//: Called at boot, returnVal: 0 (Seems to be 0 throughout)
+-(long long)escrowCount {
+	long long val = %orig;
+	HBLogDebug(@"escrowCount, returnVal: %lld", val);
+	return val;
+}
+
+%end
+
+
+@interface SBFMobileKeyBag : NSObject {
 	//NSObject*<OS_dispatch_queue> _calloutQueue;
 	//NSObject*<OS_dispatch_queue> _queue;
 	//NSMutableArray* _queue_observerStateChangedCallbackBlocks;
@@ -40,7 +128,6 @@
 
 %hook SBFMobileKeyBag
 //: !!! investigate SBFMobileKeyBagState
-
 
 //: Gets called at boot 
 //: <SBFUserAuthenticationController: 0x1702f9180; authState: Revoked; passcodeSet: YES>
