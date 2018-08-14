@@ -30,13 +30,109 @@
 -(BOOL)_queue_verifyExpectedStashState:(long long)arg1 ;
 -(void)lockSkippingGracePeriod:(BOOL)arg1 ;
 -(BOOL)unlockWithPasscode:(id)arg1 error:(id*)arg2 ;
--(BOOL)hasPasscodeSet;
+//-(BOOL)hasPasscodeSet;
 -(void)createStashBag:(id)arg1 completion:(/*^block*/id)arg2 ;
 -(BOOL)hasBeenUnlockedSinceBoot;
 -(SBFMobileKeyBagState *)extendedState;
 -(BOOL)beginRecovery:(id)arg1 error:(id*)arg2 ;
 -(void)waitForUnlockWithTimeout:(float)arg1 ;
 @end
+
+%hook SBFMobileKeyBag
+//: !!! investigate SBFMobileKeyBagState
+
+
+//: Gets called at boot 
+//: <SBFUserAuthenticationController: 0x1702f9180; authState: Revoked; passcodeSet: YES>
+//: <SBFUserAuthenticationController: 0x1702f9180; authState: Revoked; passcodeSet: YES>
+//: <SBUIBiometricResource: 0x1744c6890> isFingerOn = NO;
+//: not called when user types incorrect password.
+-(void)addObserver:(id)arg1 {
+	HBLogDebug(@"addObserver, arg1: %@", arg1);
+	%orig;
+}
+-(void)removeObserver:(id)arg1 {
+	HBLogDebug(@"removeObserver, arg1: %@", arg1);
+	%orig;
+}
+//: called when pass was correct
+-(void)_queue_handleKeybagStatusChanged {
+	HBLogDebug(@"_queue_handleKeybagStatusChanged");
+	%orig;
+}
+-(void)_queue_firstUnlockOccurred{
+	HBLogDebug(@"_queue_firstUnlockOccurred");
+	%orig;
+}
+//: called at boot, arg1: 1, returnVal: <SBFMobileKeyBagState: 0x17401e570; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
+//: called at boot, arg1: 0, returnVal: <SBFMobileKeyBagState: 0x17401c5b0; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
+//: called at boot, arg1: 1, returnVal: <SBFMobileKeyBagState: 0x17420d140; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
+//:!! called @ 3rd incorrect pass, arg1: 0, returnVal: <SBFMobileKeyBagState: 0x1702103e0; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 59; failedAttemptCount: 5; escrowCount: 0>
+//: called after phone locks,  arg1: 1, returnVal: <SBFMobileKeyBagState: 0x170218440; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 38; failedAttemptCount: 5; escrowCount: 0>
+//:!! when pass is correct: arg1: 1, returnVal: <SBFMobileKeyBagState: 0x170205190; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
+-(id)_queue_lockStateExtended:(BOOL)arg1  {
+	id val = %orig;
+	HBLogDebug(@"_queue_lockStateExtended, arg1: %d, returnVal: %@", arg1, val);
+	return val;
+}
+//: called at boot, arg1: <SBFMobileKeyBagState: 0x17401e570; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
+//: called when pass is correcT: arg1: <SBFMobileKeyBagState: 0x170205190; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
+-(void)_queue_setHasPasscodeIfNecessary:(id)arg1 {
+	HBLogDebug(@"_queue_setHasPasscodeIfNecessary, arg1: %@", arg1);
+	%orig;
+}
+-(void)_queue_createStashBag:(id)arg1 {
+	HBLogDebug(@"_queue_createStashBag, arg1: %@", arg1);
+	%orig;
+}
+-(void)createStashBag:(id)arg1 completion:(/*^block*/id)arg2 completionQueue:(id)arg3 {
+	HBLogDebug(@"createStashBag, arg1: %@, arg2: %@, arg3: %@", arg1, arg2, arg3);
+	%orig;
+}
+-(BOOL)_queue_verifyExpectedStashState:(long long)arg1 {
+	BOOL val = %orig;
+	HBLogDebug(@"_queue_verifyExpectedStashState, arg1: %lld, returnVal: %d", arg1, val);
+	return val;
+
+}
+-(void)lockSkippingGracePeriod:(BOOL)arg1 {
+	HBLogDebug(@"lockSkippingGracePeriod, arg1: %d", arg1);
+	%orig;
+}
+-(BOOL)unlockWithPasscode:(id)arg1 error:(id*)arg2 {
+	BOOL val = %orig;
+	HBLogDebug(@"unlockWithPasscode, arg1: %@, arg2: %@, returnVal: %d", arg1, *arg2, val);
+	return val;
+}
+-(void)createStashBag:(id)arg1 completion:(/*^block*/id)arg2 {
+	HBLogDebug(@"createStashBag, arg1: %@, arg2: %@", arg1, arg2);
+}
+//: At boot, return val is YES;
+-(BOOL)hasBeenUnlockedSinceBoot {
+	BOOL val = %orig;
+	HBLogDebug(@"KEYhasBeenUnlockedSinceBoot, %d", val);
+	return val;
+}
+//: CALLED at boot many times, returnVal: <SBFMobileKeyBagState: 0x17001f4b0; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
+//: called after 3rd wrong attempt, returnVal: <SBFMobileKeyBagState: 0x17420cc20; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 59; failedAttemptCount: 5; escrowCount: 0>
+//: CALLED after correct attempt,  returnVal: <SBFMobileKeyBagState: 0x1702053b0; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
+-(SBFMobileKeyBagState *)extendedState {
+	SBFMobileKeyBagState *val = %orig;
+	HBLogDebug(@"extendedState, returnVal: %@", val);
+	return val;
+}
+-(BOOL)beginRecovery:(id)arg1 error:(id*)arg2 {
+	BOOL val = %orig;
+	HBLogDebug(@"beginRecovery, %d", val);
+	return val;
+}
+-(void)waitForUnlockWithTimeout:(float)arg1 {
+	HBLogDebug(@"waitForUnlockWithTimeout, %f", arg1);
+	%orig;
+}
+
+%end
+
 
 @interface SBFUserAuthenticationController : NSObject {
 	SBFMobileKeyBag* _keybag;
