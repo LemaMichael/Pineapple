@@ -1,6 +1,7 @@
 //: forward declaring classes
 @class SBFMobileKeyBagState;
 @class PCPersistentTimer;
+@class SBFMobileKeyBagState;
 
 @interface SBFMobileKeyBagState : NSObject
 //:<SBFMobileKeyBagState: 0x17401e570; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
@@ -89,6 +90,84 @@
 }
 
 %end
+
+@interface SBFMutableMobileKeyBagState : SBFMobileKeyBagState
+@property (assign,nonatomic) long long lockState; 
+@property (assign,nonatomic) double backOffTime; 
+@property (assign,nonatomic) unsigned long long failedAttemptCount; 
+@property (assign,nonatomic) BOOL permanentlyBlocked; 
+@property (assign,nonatomic) BOOL shouldWipe; 
+@property (assign,nonatomic) BOOL recoveryEnabled; 
+@property (assign,nonatomic) BOOL recoveryRequired; 
+@property (assign,nonatomic) BOOL recoveryPossible; 
+@property (assign,nonatomic) long long escrowCount; 
+-(id)init;
+-(id)copyWithZone:(NSZone*)arg1 ;
+-(void)setFailedAttemptCount:(unsigned long long)arg1 ;
+-(id)initWithMKBLockStateInfo:(id)arg1 ;
+-(id)_mutableState;
+-(void)setBackOffTime:(double)arg1 ;
+-(void)setPermanentlyBlocked:(BOOL)arg1 ;
+-(void)setShouldWipe:(BOOL)arg1 ;
+-(void)setRecoveryRequired:(BOOL)arg1 ;
+-(void)setRecoveryPossible:(BOOL)arg1 ;
+-(void)setRecoveryEnabled:(BOOL)arg1 ;
+-(void)setEscrowCount:(long long)arg1 ;
+-(void)setLockState:(long long)arg1 ;
+@end
+
+%hook SBFMutableMobileKeyBagState
+-(void)setFailedAttemptCount:(unsigned long long)arg1 {
+	//HBLogDebug(@"setFailedAttemptCount, arg1: %lld", arg1);
+	//%orig;
+	%orig(0);
+}
+-(id)initWithMKBLockStateInfo:(id)arg1 {
+	id val = %orig;
+	HBLogDebug(@"initWithMKBLockStateInfo, arg1: %@, returnVal: %@", arg1, val);
+	return val;
+}
+-(id)_mutableState {
+	id val = %orig;
+	HBLogDebug(@"_mutableState, returnVal: %@", val);
+	return val;
+}
+-(void)setBackOffTime:(double)arg1 {
+	HBLogDebug(@"setBackOffTime, arg1: %f", arg1);
+	%orig(0);
+}
+-(void)setPermanentlyBlocked:(BOOL)arg1 {
+	HBLogDebug(@"setPermanentlyBlocked, arg1: %d", arg1);
+	%orig(NO);
+}
+-(void)setShouldWipe:(BOOL)arg1 {
+	HBLogDebug(@"setShouldWipe, arg1: %d", arg1);
+	%orig(NO);
+
+}
+-(void)setRecoveryRequired:(BOOL)arg1 {
+	HBLogDebug(@"setRecoveryRequired, arg1: %d", arg1);
+	%orig;
+}
+-(void)setRecoveryPossible:(BOOL)arg1 {
+	HBLogDebug(@"setRecoveryPossible, arg1: %d", arg1);
+	%orig;
+}
+-(void)setRecoveryEnabled:(BOOL)arg1 {
+	HBLogDebug(@"setRecoveryEnabled, arg1: %d", arg1);
+	%orig;
+}
+-(void)setEscrowCount:(long long)arg1 {
+	HBLogDebug(@"setEscrowCount, arg1: %lld", arg1);
+	%orig;
+}
+-(void)setLockState:(long long)arg1 {
+	HBLogDebug(@"setLockState, arg1: %lld", arg1);
+	%orig;
+}
+
+%end 
+
 
 
 @interface SBFMobileKeyBag : NSObject {
@@ -333,12 +412,12 @@
 // 555890190.815751 is the new val
 
 -(double)timeUntilUnblockedSinceReferenceDate{
-	MSHookIvar<double>(self, "_unblockTime") = -1.0;
+	MSHookIvar<double>(self, "_unblockTime") = 0.0;
 
 	double val = %orig;
 	HBLogDebug(@"timeUntilUnblockedSinceReferenceDate: %f \n", val);
 
-	return -1.0;
+	return 0.0;
 
 }
 -(BOOL)isPermanentlyBlocked {
@@ -350,7 +429,7 @@
 	//: MOVED from timeUntilUnblockedSinceReferenceDate to here.
 	double time = MSHookIvar<double>(self, "_unblockTime");
 	HBLogDebug(@"_unblockTime, %f \n", time);
-	MSHookIvar<double>(self, "_unblockTime") = -1.0;
+	MSHookIvar<double>(self, "_unblockTime") = 0.0;
 
 	HBLogDebug(@"notePasscodeUnlockFailedWithError, %@ \n", arg1);
 	//HBLogDebug(@"arg2 belongs to %@", [arg1 class]);
