@@ -1,6 +1,3 @@
-#import <SpringBoard/SBAbstractSpringBoardDefaultDomain.h>
-#import <BaseBoard/BSAbstractDefaultDomain.h>
-
 @interface SBFUserAuthenticationController : NSObject
 +(BOOL)_isInBioUnlockState;
 -(NSString *)description;
@@ -109,96 +106,7 @@
 @end
 
 
-%hook SBSecurityDefaults
--(void)setBlockStateGeneration:(NSNumber *)arg1  {
-	HBLogDebug(@"setBlockStateGeneration, arg1: %@", arg1);
-}
--(NSNumber *)blockStateGeneration {
-	NSNumber *val = %orig; 
-	HBLogDebug(@"blockStateGeneration, returnVal: %@",  val);
-	return val;
-}
--(void)setAllowLockAndUnlockWithCase:(BOOL)arg1 {
-	HBLogDebug(@"setAllowLockAndUnlockWithCase, arg1: %d", arg1);
-}
--(BOOL)allowLockAndUnlockWithCase {
-	BOOL val = %orig;
-	HBLogDebug(@"allowLockAndUnlockWithCase, returnVal: %d", val);
-	return val;
-}
--(void)setPendingDeviceWipe:(NSNumber *)arg1 {
-	HBLogDebug(@"setBlockStateGeneration, arg1: %@", arg1);
-}
--(id)isPendingDeviceWipe {
-	id val = %orig;
-	HBLogDebug(@"isPendingDeviceWipe, returnVal: %@", val);
-	return val;
-}
--(void)setDontLockEver:(BOOL)arg1  {
-	HBLogDebug(@"setDontLockEver, arg1: %d", arg1);
-}
--(BOOL)dontLockEver {
-	BOOL val = %orig;
-	HBLogDebug(@"dontLockEver, returnVal: %d", val);
-	return val;
-}
--(void)setDeviceWipeEnabled:(BOOL)arg1 {
-	HBLogDebug(@"setDeviceWipeEnabled, arg1: %d", arg1);
 
-}
--(BOOL)isDeviceWipeEnabled {
-	BOOL val = %orig;
-	HBLogDebug(@"isDeviceWipeEnabled, returnVal: %d", val);
-	return val;
-}
--(void)setBlockedForThermal:(BOOL)arg1 {
-	HBLogDebug(@"setBlockedForThermal, arg1: %d", arg1);
-
-}
--(BOOL)isBlockedForThermal {
-	BOOL val = %orig;
-	HBLogDebug(@"isBlockedForThermal, returnVal: %d", val);
-	return val;
-}
--(void)setBlockedForPasscode:(NSNumber *)arg1 {
-	HBLogDebug(@"setBlockedForPasscode, arg1: %@", arg1);
-
-}
--(id)isBlockedForPasscode {
-	id val = %orig;
-	HBLogDebug(@"isBlockedForPasscode, returnVal: %@", val);
-	return val;
-}
--(void)setUnblockTimeFromReferenceDate:(NSNumber *)arg1 {
-	HBLogDebug(@"setUnblockTimeFromReferenceDate, arg1: %@", arg1);
-}
--(NSNumber *)unblockTimeFromReferenceDate {
-	NSNumber *val = %orig; 
-	HBLogDebug(@"unblockTimeFromReferenceDate, returnVal: %@",  val);
-	return val;
-}
--(void)setNumberOfFailedPasscodeAttempts:(NSNumber *)arg1  {
-	HBLogDebug(@"setNumberOfFailedPasscodeAttempts, arg1: %@", arg1);
-
-}
--(NSNumber *)numberOfFailedPasscodeAttempts{
-	NSNumber *val = %orig; 
-	HBLogDebug(@"numberOfFailedPasscodeAttempts, return val: %@",  val);
-	return val;
-}
-// -(void)_bindAndRegisterDefaults{
-// 	HBLogDebug(@"_bindAndRegisterDefaults");
-// }
--(id)deviceLockDefaultForKey:(id)arg1 {
-	id val = %orig;
-	HBLogDebug(@"deviceLockDefaultForKey, arg1: %@,  returnVal: %@", arg1, val);
-	return val;
-}
--(void)setDeviceLockDefault:(id)arg1 forKey:(id)arg2 {
-	HBLogDebug(@"setDeviceLockDefault, arg1: %@, key: %@", arg1, arg2);
-}
-
-%end 
 
 
 %hook SBFUserAuthenticationModelSEP
