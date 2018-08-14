@@ -4,6 +4,10 @@
 @class SBFMobileKeyBagState;
 
 @interface SBFMobileKeyBagState : NSObject
+{
+	NSDictionary* _state;
+
+}
 //:<SBFMobileKeyBagState: 0x17401e570; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
 -(id)init;
 -(BOOL)isEqual:(id)arg1 ;
@@ -30,10 +34,44 @@
 @end
 
 %hook SBFMobileKeyBagState
+-(id)init {
+	id val = %orig;
+	HBLogDebug(@"init! called, returnVal: %@", val);
+	return val;
+}
 //: Called at boot, returnsVal: 2 (Seems to be the value 2 throughout)
 -(long long)lockState {
 	long long val = %orig;
 	HBLogDebug(@"lockState, returnVal: %lld", val);
+	NSDictionary *result = MSHookIvar<NSDictionary*>(self, "_state");
+	HBLogDebug(@"the result is in the dict: %@", result);
+	MSHookIvar<NSDictionary*>(self, "_state") = NULL;
+	/*
+	In the dictionary is 
+	 boff = 0;
+    countdown = 0;
+    fa = 0;
+    ls = 0;
+    state = 20;
+*/
+	/*
+	In the dict when the keypad view is on
+	boff = 0;
+    countdown = 0;
+    fa = 0;
+    ls = 1;
+    state = 21;
+	*/
+
+	/*
+	when pass is wrong, dict is:
+
+	 boff = 59;
+    countdown = 0;
+    fa = 5;
+    ls = 1;
+    state = 269;
+    */
 	return val;
 }
 //: Called at boot, returnVal: 1 (Seems to be the val 1 throughout)
@@ -128,6 +166,32 @@
 
 %hook SBFMobileKeyBag
 //: !!! investigate SBFMobileKeyBagState
+
+//: @ boot: returnVal: <SBFMobileKeyBag: 0x17046b400>
+//: @2 boot: returnVal: <SBFMobileKeyBag: 0x170479c00>
++(id)sharedInstance {
+	id val = %orig;
+	HBLogDebug(@"sharedInstance, returnVal: %@", val);
+	return val;
+}
+//: @ boot: returnVal: <SBFMobileKeyBag: 0x17046b400>
+//: @2 boot: <SBFMobileKeyBag: 0x170479c00>
+-(id)init {
+	id val = %orig;
+	HBLogDebug(@"init, returnVal: %@", val);
+	return val;
+
+}
+-(void)dealloc {
+	HBLogDebug(@"dealloc called!");
+
+}
+//: LOOk into this
+-(SBFMobileKeyBagState *)state {
+	SBFMobileKeyBagState *val = %orig;
+	HBLogDebug(@"SBFstate, returnVal: %@", val);
+	return val;
+}
 
 //: Gets called at boot 
 //: <SBFUserAuthenticationController: 0x1702f9180; authState: Revoked; passcodeSet: YES>
