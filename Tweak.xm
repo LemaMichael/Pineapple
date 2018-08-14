@@ -81,32 +81,6 @@
 -(void)notePasscodeUnlockFailedWithError:(id)arg1 ;
 @end
 
-@interface SBSecurityDefaults: SBAbstractSpringBoardDefaultDomain
--(void)setBlockStateGeneration:(NSNumber *)arg1 ;
--(NSNumber *)blockStateGeneration;
--(void)setAllowLockAndUnlockWithCase:(BOOL)arg1 ;
--(BOOL)allowLockAndUnlockWithCase;
--(void)setPendingDeviceWipe:(NSNumber *)arg1 ;
--(id)isPendingDeviceWipe;
--(void)setDontLockEver:(BOOL)arg1 ;
--(BOOL)dontLockEver;
--(void)setDeviceWipeEnabled:(BOOL)arg1 ;
--(BOOL)isDeviceWipeEnabled;
--(void)setBlockedForThermal:(BOOL)arg1 ;
--(BOOL)isBlockedForThermal;
--(void)setBlockedForPasscode:(NSNumber *)arg1 ;
--(id)isBlockedForPasscode;
--(void)setUnblockTimeFromReferenceDate:(NSNumber *)arg1 ;
--(NSNumber *)unblockTimeFromReferenceDate;
--(void)setNumberOfFailedPasscodeAttempts:(NSNumber *)arg1 ;
--(NSNumber *)numberOfFailedPasscodeAttempts;
-//-(void)_bindAndRegisterDefaults; THIS CRASHED my phone
--(id)deviceLockDefaultForKey:(id)arg1 ;
--(void)setDeviceLockDefault:(id)arg1 forKey:(id)arg2 ;
-@end
-
-
-
 
 
 %hook SBFUserAuthenticationModelSEP
