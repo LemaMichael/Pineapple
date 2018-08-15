@@ -5,6 +5,7 @@
 @class PCSimpleTimer;
 
 
+
 @interface SBFMobileKeyBagState : NSObject
 {
 	NSDictionary* _state;
