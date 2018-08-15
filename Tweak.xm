@@ -2,6 +2,252 @@
 @class SBFMobileKeyBagState;
 @class PCPersistentTimer;
 @class SBFMobileKeyBagState;
+@class PCSimpleTimer;
+
+@interface PCPersistentTimer : NSObject {
+	double _fireTime;
+	double _startTime;
+	unsigned long long _guidancePriority;
+	double _minimumEarlyFireProportion;
+	BOOL _triggerOnGMTChange;
+	BOOL _disableSystemWaking;
+	BOOL _userVisible;
+	NSString* _serviceIdentifier;
+	id _target;
+	SEL _selector;
+	id _userInfo;
+	PCSimpleTimer* _simpleTimer;
+}
++(id)_backgroundUpdateQueue;
++(void)_updateTime:(double)arg1 forGuidancePriority:(unsigned long long)arg2 ;
++(double)currentMachTimeInterval;
++(double)_currentGuidanceTime;
++(id)lastSystemWakeDate;
+-(double)fireTime;
+-(void)interfaceManagerInternetReachabilityChanged:(id)arg1 ;
+-(void)interfaceManagerWWANInterfaceChangedPowerState:(id)arg1 ;
+-(void)interfaceManagerWWANInterfaceStatusChanged:(id)arg1 ;
+-(id)_initWithAbsoluteTime:(double)arg1 serviceIdentifier:(id)arg2 guidancePriority:(unsigned long long)arg3 target:(id)arg4 selector:(SEL)arg5 userInfo:(id)arg6 triggerOnGMTChange:(BOOL)arg7 ;
+-(void)_updateTimers;
+-(void)scheduleInRunLoop:(id)arg1 inMode:(id)arg2 ;
+-(void)_fireTimerFired;
+-(BOOL)firingIsImminent;
+-(double)_nextForcedAlignmentAbsoluteTime;
+-(double)_earlyFireTime;
+-(void)cutPowerMonitorBatteryConnectedStateDidChange:(id)arg1 ;
+-(id)initWithTimeInterval:(double)arg1 serviceIdentifier:(id)arg2 guidancePriority:(unsigned long long)arg3 target:(id)arg4 selector:(SEL)arg5 userInfo:(id)arg6 ;
+-(double)minimumEarlyFireProportion;
+-(BOOL)disableSystemWaking;
+-(void)invalidate;
+-(void)dealloc;
+-(NSString *)debugDescription;
+-(BOOL)isValid;
+-(id)userInfo;
+-(double)startTime;
+-(void)setDisableSystemWaking:(BOOL)arg1 ;
+-(BOOL)isUserVisible;
+-(id)initWithTimeInterval:(double)arg1 serviceIdentifier:(id)arg2 target:(id)arg3 selector:(SEL)arg4 userInfo:(id)arg5 ;
+-(void)setUserVisible:(BOOL)arg1 ;
+-(void)scheduleInRunLoop:(id)arg1 ;
+-(void)scheduleInQueue:(id)arg1 ;
+-(void)setMinimumEarlyFireProportion:(double)arg1 ;
+-(id)initWithFireDate:(id)arg1 serviceIdentifier:(id)arg2 target:(id)arg3 selector:(SEL)arg4 userInfo:(id)arg5 ;
+@end
+
+%hook PCPersistentTimer
+//: called at boot, returnVal: <OS_dispatch_queue: PCPersistentTimer-sharedBackgroundUpdateQueue[0x1748fcb00]>
++(id)_backgroundUpdateQueue {
+	id val = %orig;
+	HBLogDebug(@"_backgroundUpdateQueue, returnVal: %@", val);
+	return val;
+}
++(void)_updateTime:(double)arg1 forGuidancePriority:(unsigned long long)arg2  {
+	HBLogDebug(@"_updateTime, arg1: %f, arg2: %lld", arg1, arg2);
+	%orig;
+}
+//: called at boot, returnVal: 125809.833708
+//: called at boot again, returnVal: 125810.492353
+//: called yet again, returnVal: 125810.493949
+//: called again, returnVal: 125812.312047
+//: called again, returnVal: 125812.331484
++(double)currentMachTimeInterval {
+	double val = %orig;
+	HBLogDebug(@"currentMachTimeInterval, returnVal: %f", val);
+	return val;
+}
++(double)_currentGuidanceTime {
+	double val = %orig;
+	HBLogDebug(@"_currentGuidanceTime, returnVal: %f", val);
+	return val;
+}
+//: called at boot, returnVal: 2018-08-14 23:46:12 +0000
+//: called again, returnVal: 2018-08-14 23:46:12 +0000
++(id)lastSystemWakeDate {
+	id val = %orig;
+	HBLogDebug(@"lastSystemWakeDate, returnVal: %@", val);
+	return val;
+}
+-(double)fireTime {
+	double val = %orig;
+	HBLogDebug(@"fireTime, returnVal: %f", val);
+	return val;
+}
+-(void)interfaceManagerInternetReachabilityChanged:(id)arg1  {
+	HBLogDebug(@"interfaceManagerInternetReachabilityChanged, arg1: %@", arg1);
+	%orig;
+}
+-(void)interfaceManagerWWANInterfaceChangedPowerState:(id)arg1 {
+	HBLogDebug(@"interfaceManagerWWANInterfaceChangedPowerState, arg1: %@", arg1);
+	%orig;
+}
+-(void)interfaceManagerWWANInterfaceStatusChanged:(id)arg1  {
+	HBLogDebug(@"interfaceManagerWWANInterfaceStatusChanged, arg1: %@", arg1);
+	%orig;
+}
+//: Called at boot, arg1: 556027200.000000, arg2: com.apple.mobiletimer, arg3: -1, arg4: <UNSLocalNotificationClient: 0x17468da20>, arg5: _queue_triggerDidFireForTimer:, arg6: (null), arg7: 0, returnVal: <PCPersistentTimer: 0x1744ad2c0>
+//: called again at boot,  arg1: 555988513.977283, arg2: com.apple.Duet.APLSScheduler, arg3: -1, arg4: <AppLaunchStatsScheduler: 0x174687ee0>, arg5: timerFired:, arg6: (null), arg7: 0, returnVal: <PCPersistentTimer: 0x1744b1e20>
+//: called yet again, arg1: 556027200.000000, arg2: com.apple.mobiletimer, arg3: -1, arg4: <UNSLocalNotificationClient: 0x17468da20>, arg5: _queue_triggerDidFireForTimer:, arg6: (null), arg7: 0, returnVal: <PCPersistentTimer: 0x1744bd640>
+//: called after (invalidate),  arg1: 555988937.183394, arg2: com.apple.Duet.APLSScheduler, arg3: -1, arg4: <AppLaunchStatsScheduler: 0x174687ee0>, arg5: timerFired:, arg6: (null), arg7: 0, returnVal: <PCPersistentTimer: 0x1704b71c0>
+-(id)_initWithAbsoluteTime:(double)arg1 serviceIdentifier:(id)arg2 guidancePriority:(unsigned long long)arg3 target:(id)arg4 selector:(SEL)arg5 userInfo:(id)arg6 triggerOnGMTChange:(BOOL)arg7 {
+	id val = %orig;
+	HBLogDebug(@"_initWithAbsoluteTime, arg1: %f, arg2: %@, arg3: %lld, arg4: %@, arg5: %s, arg6: %@, arg7: %d, returnVal: %@", arg1, arg2, arg3, arg4, sel_getName(arg5), arg6, arg7, val);
+	return val;
+}
+//: called at boot.
+-(void)_updateTimers {
+	HBLogDebug(@"_updateTimers");
+	%orig;
+}
+-(void)scheduleInRunLoop:(id)arg1 inMode:(id)arg2  {
+	HBLogDebug(@"scheduleInRunLoop, arg1: %@, arg2: %@", arg1, arg2);
+	%orig;
+}
+//: called after (invalidate)
+-(void)_fireTimerFired {
+	HBLogDebug(@"_fireTimerFired");
+	%orig;
+}
+-(BOOL)firingIsImminent {
+	BOOL val = %orig;
+	HBLogDebug(@"firingIsImminent, returnVal: %d", val);
+	return val;
+}
+//: called at boot,  returnVal: 555996535.000000
+//: called again boot, returnVal: 555996535.000000
+//: called again boot, returnVal: 555996535.000000
+//: called again boot, returnVal: 555996535.000000
+-(double)_nextForcedAlignmentAbsoluteTime {
+	double val = %orig;
+	HBLogDebug(@"_nextForcedAlignmentAbsoluteTime, returnVal: %f", val);
+	return val;
+}
+//: called at boot after, (_nextForcedAlignmentAbsoluteTime),  returnVal: 556027200.000000
+//: called yet again, after (_nextForcedAlignmentAbsoluteTime) returnVal: 555988513.977283
+//: called yet again, after (_nextForcedAlignmentAbsoluteTime) returnVal: 556027200.000000
+-(double)_earlyFireTime {
+	double val = %orig;
+	HBLogDebug(@"_earlyFireTime, returnVal: %f", val);
+	return val;
+}
+-(void)cutPowerMonitorBatteryConnectedStateDidChange:(id)arg1 {
+	HBLogDebug(@"cutPowerMonitorBatteryConnectedStateDidChange, arg1: %@", arg1);
+	%orig;
+}
+-(id)initWithTimeInterval:(double)arg1 serviceIdentifier:(id)arg2 guidancePriority:(unsigned long long)arg3 target:(id)arg4 selector:(SEL)arg5 userInfo:(id)arg6 {
+	id val = %orig;
+	HBLogDebug(@"initWithTimeInterval1, arg1: %f, arg2: %@, arg3: %lld, arg4: %@, arg5: %s, arg6: %@, returnVal: %@", arg1, arg2, arg3, arg4, sel_getName(arg5), arg6, val);
+	return val;
+}
+-(double)minimumEarlyFireProportion {
+	double val = %orig;
+	HBLogDebug(@"minimumEarlyFireProportion, returnVal: %f", val);
+	return val;
+}
+-(BOOL)disableSystemWaking {
+	BOOL val = %orig;
+	HBLogDebug(@"disableSystemWaking, returnVal: %d", val);
+	return val;
+}
+//: called at boot.
+//: called after (Dealloc)
+-(void)invalidate {
+	HBLogDebug(@"invalidate");
+	%orig;
+}
+//: called after (_earlyFireTime)
+-(void)dealloc {
+	HBLogDebug(@"dealloc");
+	%orig;
+}
+-(NSString *)debugDescription {
+	NSString *val = %orig;
+	HBLogDebug(@"debugDescription, returnVal: %@", val);
+	return val;
+}
+-(BOOL)isValid {
+	BOOL val = %orig;
+	HBLogDebug(@"isValid, returnVal: %d", val);
+	return val;
+}
+-(id)userInfo {
+	id val = %orig;
+	HBLogDebug(@"userInfo, returnVal: %@", val);
+	return val;
+}
+-(double)startTime {
+	double val = %orig; 
+	HBLogDebug(@"startTime, returnVal: %f", val);
+	return val;
+}
+//: called at boot, arg1: 1
+-(void)setDisableSystemWaking:(BOOL)arg1 {
+	HBLogDebug(@"setDisableSystemWaking, arg1: %d", arg1);
+	%orig;
+}
+-(BOOL)isUserVisible {
+	BOOL val = %orig;
+	HBLogDebug(@"isUserVisible, returnVal: %d", val);
+	return val;
+}
+-(id)initWithTimeInterval:(double)arg1 serviceIdentifier:(id)arg2 target:(id)arg3 selector:(SEL)arg4 userInfo:(id)arg5  {
+	id val = %orig;
+	HBLogDebug(@"initWithTimeInterval2, arg1: %f, arg2: %@, arg3: %@, arg4: %s, arg5: %@, returnVal: %@", arg1, arg2, arg3, sel_getName(arg4), arg5, val);
+	return val;
+}
+//: called at boot, arg1: 1
+-(void)setUserVisible:(BOOL)arg1  {
+	HBLogDebug(@"setUserVisible, arg1: %d", arg1);
+	%orig;
+}
+//: called after (_updateTimers), arg1: <CFRunLoop 0x174166c00 [0x1b379cbb8]>{wakeup port = 0x1b03, stopped = false, ignoreWakeUps = false, 
+-(void)scheduleInRunLoop:(id)arg1 {
+	HBLogDebug(@"scheduleInRunLoop, arg1: %@", arg1);
+	%orig;
+}
+//: called at boot, arg1: <OS_dispatch_queue_serial: com.apple.usernotificationsserver.NotificationSchedulingService[0x1748f0680]>
+-(void)scheduleInQueue:(id)arg1 {
+	HBLogDebug(@"scheduleInQueue, arg1: %@", arg1);
+	%orig;
+}
+//: called at boot, arg1: 1.000000
+//: called again at boot after (initWithFireDate), arg1: 0.000000
+//:called again , arg1: 1.000000
+-(void)setMinimumEarlyFireProportion:(double)arg1 {
+	HBLogDebug(@"setMinimumEarlyFireProportion, arg1: %f", arg1);
+	%orig;
+}
+//: called at boot, arg1: 2018-08-15 12:00:00 +0000, arg2: com.apple.mobiletimer, arg3: <UNSLocalNotificationClient: 0x17468da20>, arg4: _queue_triggerDidFireForTimer:, arg5: (null), returnVal: <PCPersistentTimer: 0x1744ad2c0>
+//: called again at boot, arg1: 2018-08-15 01:15:13 +0000, arg2: com.apple.Duet.APLSScheduler, arg3: <AppLaunchStatsScheduler: 0x174687ee0>, arg4: timerFired:, arg5: (null), returnVal: <PCPersistentTimer: 0x1744b1e20>
+//: called yet again at boot, arg1: 2018-08-15 12:00:00 +0000, arg2: com.apple.mobiletimer, arg3: <UNSLocalNotificationClient: 0x17468da20>, arg4: _queue_triggerDidFireForTimer:, arg5: (null), returnVal: <PCPersistentTimer: 0x1744bd640>
+//: called after (_initWithAbsoluteTime),  arg1: 2018-08-15 01:22:17 +0000, arg2: com.apple.Duet.APLSScheduler, arg3: <AppLaunchStatsScheduler: 0x174687ee0>, arg4: timerFired:, arg5: (null), returnVal: <PCPersistentTimer: 0x1704b71c0>
+
+-(id)initWithFireDate:(id)arg1 serviceIdentifier:(id)arg2 target:(id)arg3 selector:(SEL)arg4 userInfo:(id)arg5 {
+	id val = %orig;
+	HBLogDebug(@"initWithFireDate, arg1: %@, arg2: %@, arg3: %@, arg4: %s, arg5: %@, returnVal: %@", arg1, arg2, arg3, sel_getName(arg4), arg5, val);
+	return val;
+}
+%end
+
 
 @interface SBFMobileKeyBagState : NSObject
 {
@@ -36,16 +282,16 @@
 %hook SBFMobileKeyBagState
 -(id)init {
 	id val = %orig;
-	HBLogDebug(@"init! called, returnVal: %@", val);
+	NSLog(@"init! called, returnVal: %@", val);
 	return val;
 }
 //: Called at boot, returnsVal: 2 (Seems to be the value 2 throughout)
 -(long long)lockState {
 	long long val = %orig;
-	HBLogDebug(@"lockState, returnVal: %lld", val);
+	NSLog(@"lockState, returnVal: %lld", val);
 	NSDictionary *result = MSHookIvar<NSDictionary*>(self, "_state");
-	HBLogDebug(@"the result is in the dict: %@", result);
-	MSHookIvar<NSDictionary*>(self, "_state") = NULL;
+	NSLog(@"the result is in the dict: %@", result);
+	//MSHookIvar<NSDictionary*>(self, "_state") = NULL;
 	/*
 	In the dictionary is 
 	 boff = 0;
@@ -77,31 +323,31 @@
 //: Called at boot, returnVal: 1 (Seems to be the val 1 throughout)
 -(BOOL)isEffectivelyLocked {
 	BOOL val = %orig;
-	HBLogDebug(@"isEffectivelyLocked, returnVal: %d", val);
+	NSLog(@"isEffectivelyLocked, returnVal: %d", val);
 	return val;
 }
 //: Called at boot, returnVal: 0
 -(BOOL)permanentlyBlocked {
 	BOOL val = %orig;
-	HBLogDebug(@"permanentlyBlocked, returnVal: %d", val);
+	NSLog(@"permanentlyBlocked, returnVal: %d", val);
 	return NO;
 }
 //: Called at boot, returnVal: 0
 -(BOOL)shouldWipe {
 	BOOL val = %orig;
-	HBLogDebug(@"shouldWipe, returnVal: %d", val);
+	NSLog(@"shouldWipe, returnVal: %d", val);
 	return NO;
 }
 //: Called at boot, returnVal: 0
 -(BOOL)recoveryRequired {
 	BOOL val = %orig;
-	HBLogDebug(@"recoveryRequired, returnVal: %d", val);
+	NSLog(@"recoveryRequired, returnVal: %d", val);
 	return val;
 }
 //: Called at boot, returnVal: 1
 -(BOOL)recoveryPossible {
 	BOOL val = %orig;
-	HBLogDebug(@"recoveryPossible, returnVal: %d", val);
+	NSLog(@"recoveryPossible, returnVal: %d", val);
 	return val;
 }
 //: Called at boot, returnVal: 0.0
@@ -109,7 +355,7 @@
 //: When wrong pass is entered twice, backOffTime:  299.000000
 -(double)backOffTime {
 	double val = %orig; 
-	HBLogDebug(@"backOffTime, returnVal: %f", val);
+	NSLog(@"backOffTime, returnVal: %f", val);
 	return 0.000000;
 }
 //: Called at boot, returnVal: 0
@@ -117,13 +363,13 @@
 //: When wrong pass is entered twice, the failedAttemptCount: 6
 -(unsigned long long)failedAttemptCount {
 	unsigned long long val = %orig;
-	HBLogDebug(@"failedAttemptCount, returnVal: %lld", val);
+	NSLog(@"failedAttemptCount, returnVal: %lld", val);
 	return 0;
 }
 //: Called at boot, returnVal: 0 (Seems to be 0 throughout)
 -(long long)escrowCount {
 	long long val = %orig;
-	HBLogDebug(@"escrowCount, returnVal: %lld", val);
+	NSLog(@"escrowCount, returnVal: %lld", val);
 	return val;
 }
 
@@ -171,25 +417,25 @@
 //: @2 boot: returnVal: <SBFMobileKeyBag: 0x170479c00>
 +(id)sharedInstance {
 	id val = %orig;
-	HBLogDebug(@"sharedInstance, returnVal: %@", val);
+	NSLog(@"sharedInstance, returnVal: %@", val);
 	return val;
 }
 //: @ boot: returnVal: <SBFMobileKeyBag: 0x17046b400>
 //: @2 boot: <SBFMobileKeyBag: 0x170479c00>
 -(id)init {
 	id val = %orig;
-	HBLogDebug(@"init, returnVal: %@", val);
+	NSLog(@"init, returnVal: %@", val);
 	return val;
 
 }
 -(void)dealloc {
-	HBLogDebug(@"dealloc called!");
+	NSLog(@"dealloc called!");
 
 }
 //: LOOk into this
 -(SBFMobileKeyBagState *)state {
 	SBFMobileKeyBagState *val = %orig;
-	HBLogDebug(@"SBFstate, returnVal: %@", val);
+	NSLog(@"SBFstate, returnVal: %@", val);
 	return val;
 }
 
@@ -199,20 +445,20 @@
 //: <SBUIBiometricResource: 0x1744c6890> isFingerOn = NO;
 //: not called when user types incorrect password.
 -(void)addObserver:(id)arg1 {
-	HBLogDebug(@"addObserver, arg1: %@", arg1);
+	NSLog(@"addObserver, arg1: %@", arg1);
 	%orig;
 }
 -(void)removeObserver:(id)arg1 {
-	HBLogDebug(@"removeObserver, arg1: %@", arg1);
+	NSLog(@"removeObserver, arg1: %@", arg1);
 	%orig;
 }
 //: called when pass was correct
 -(void)_queue_handleKeybagStatusChanged {
-	HBLogDebug(@"_queue_handleKeybagStatusChanged");
+	NSLog(@"_queue_handleKeybagStatusChanged");
 	%orig;
 }
 -(void)_queue_firstUnlockOccurred{
-	HBLogDebug(@"_queue_firstUnlockOccurred");
+	NSLog(@"_queue_firstUnlockOccurred");
 	%orig;
 }
 //: called at boot, arg1: 1, returnVal: <SBFMobileKeyBagState: 0x17401e570; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
@@ -223,45 +469,45 @@
 //:!! when pass is correct: arg1: 1, returnVal: <SBFMobileKeyBagState: 0x170205190; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
 -(id)_queue_lockStateExtended:(BOOL)arg1  {
 	id val = %orig;
-	HBLogDebug(@"_queue_lockStateExtended, arg1: %d, returnVal: %@", arg1, val);
+	NSLog(@"_queue_lockStateExtended, arg1: %d, returnVal: %@", arg1, val);
 	return val;
 }
 //: called at boot, arg1: <SBFMobileKeyBagState: 0x17401e570; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
 //: called when pass is correcT: arg1: <SBFMobileKeyBagState: 0x170205190; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
 -(void)_queue_setHasPasscodeIfNecessary:(id)arg1 {
-	HBLogDebug(@"_queue_setHasPasscodeIfNecessary, arg1: %@", arg1);
+	NSLog(@"_queue_setHasPasscodeIfNecessary, arg1: %@", arg1);
 	%orig;
 }
 -(void)_queue_createStashBag:(id)arg1 {
-	HBLogDebug(@"_queue_createStashBag, arg1: %@", arg1);
+	NSLog(@"_queue_createStashBag, arg1: %@", arg1);
 	%orig;
 }
 -(void)createStashBag:(id)arg1 completion:(/*^block*/id)arg2 completionQueue:(id)arg3 {
-	HBLogDebug(@"createStashBag, arg1: %@, arg2: %@, arg3: %@", arg1, arg2, arg3);
+	NSLog(@"createStashBag, arg1: %@, arg2: %@, arg3: %@", arg1, arg2, arg3);
 	%orig;
 }
 -(BOOL)_queue_verifyExpectedStashState:(long long)arg1 {
 	BOOL val = %orig;
-	HBLogDebug(@"_queue_verifyExpectedStashState, arg1: %lld, returnVal: %d", arg1, val);
+	NSLog(@"_queue_verifyExpectedStashState, arg1: %lld, returnVal: %d", arg1, val);
 	return val;
 
 }
 -(void)lockSkippingGracePeriod:(BOOL)arg1 {
-	HBLogDebug(@"lockSkippingGracePeriod, arg1: %d", arg1);
+	NSLog(@"lockSkippingGracePeriod, arg1: %d", arg1);
 	%orig;
 }
 -(BOOL)unlockWithPasscode:(id)arg1 error:(id*)arg2 {
 	BOOL val = %orig;
-	HBLogDebug(@"unlockWithPasscode, arg1: %@, arg2: %@, returnVal: %d", arg1, *arg2, val);
+	NSLog(@"unlockWithPasscode, arg1: %@, arg2: %@, returnVal: %d", arg1, *arg2, val);
 	return val;
 }
 -(void)createStashBag:(id)arg1 completion:(/*^block*/id)arg2 {
-	HBLogDebug(@"createStashBag, arg1: %@, arg2: %@", arg1, arg2);
+	NSLog(@"createStashBag, arg1: %@, arg2: %@", arg1, arg2);
 }
 //: At boot, return val is YES;
 -(BOOL)hasBeenUnlockedSinceBoot {
 	BOOL val = %orig;
-	HBLogDebug(@"KEYhasBeenUnlockedSinceBoot, %d", val);
+	NSLog(@"KEYhasBeenUnlockedSinceBoot, %d", val);
 	return val;
 }
 //: CALLED at boot many times, returnVal: <SBFMobileKeyBagState: 0x17001f4b0; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
@@ -269,16 +515,16 @@
 //: CALLED after correct attempt,  returnVal: <SBFMobileKeyBagState: 0x1702053b0; lockState: Locked; isEffectivelyLocked: YES; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
 -(SBFMobileKeyBagState *)extendedState {
 	SBFMobileKeyBagState *val = %orig;
-	HBLogDebug(@"extendedState, returnVal: %@", val);
+	NSLog(@"extendedState, returnVal: %@", val);
 	return val;
 }
 -(BOOL)beginRecovery:(id)arg1 error:(id*)arg2 {
 	BOOL val = %orig;
-	HBLogDebug(@"beginRecovery, %d", val);
+	NSLog(@"beginRecovery, %d", val);
 	return val;
 }
 -(void)waitForUnlockWithTimeout:(float)arg1 {
-	HBLogDebug(@"waitForUnlockWithTimeout, %f", arg1);
+	NSLog(@"waitForUnlockWithTimeout, %f", arg1);
 	%orig;
 }
 
@@ -400,7 +646,7 @@
 	MSHookIvar<double>(self, "_unblockTime") = 0.0;
 
 	double val = %orig;
-	HBLogDebug(@"timeUntilUnblockedSinceReferenceDate: %f \n", val);
+	NSLog(@"timeUntilUnblockedSinceReferenceDate: %f \n", val);
 
 	return 0.0;
 
@@ -413,11 +659,11 @@
 -(void)notePasscodeUnlockFailedWithError:(id)arg1 {
 	//: MOVED from timeUntilUnblockedSinceReferenceDate to here.
 	double time = MSHookIvar<double>(self, "_unblockTime");
-	HBLogDebug(@"_unblockTime, %f \n", time);
+	NSLog(@"_unblockTime, %f \n", time);
 	MSHookIvar<double>(self, "_unblockTime") = 0.0;
 
-	HBLogDebug(@"notePasscodeUnlockFailedWithError, %@ \n", arg1);
-	//HBLogDebug(@"arg2 belongs to %@", [arg1 class]);
+	NSLog(@"notePasscodeUnlockFailedWithError, %@ \n", arg1);
+	//NSLog(@"arg2 belongs to %@", [arg1 class]);
 
 	//: arg2 = Error Domain=com.apple.springboardfoundation.mkb Code=-3 "(null)"
 	//: arg22 belongs to NSError 
@@ -433,14 +679,14 @@ static id defaultVal;
 //: Called user uses finger as passcode
 +(BOOL)_isInBioUnlockState{
 	BOOL val = %orig;
-	HBLogDebug(@"_isInBioUnlockState %d", val);
+	NSLog(@"_isInBioUnlockState %d", val);
 	return val;
 }
 
 //: Start up val returns: < SBFUserAuthenticationController: 0x1744e1580; authState: Revoked; passcodeSet: YES>
 -(NSString *)description {
 	NSString *val = %orig;
-	HBLogDebug(@"description %@", val);
+	NSLog(@"description %@", val);
 	return val;
 }
 
@@ -449,20 +695,20 @@ static id defaultVal;
 //: This keeps track of our last successful password date and time.
 -(id)publicDescription {
 	id val = %orig;
-	HBLogDebug(@"publicDescription, return val: %@", val);
+	NSLog(@"publicDescription, return val: %@", val);
 	return val;
 }
 //: CALLED AFTER 16 CORRECT ATTEMPT, arg1: <SBFMobileKeyBag: 0x17446eac0> (arg2) value: <SBFMobileKeyBagState: 0x170204ab0; lockState: Unlocked; isEffectivelyLocked: NO; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
 -(void)keybag:(id)arg1 extendedStateDidChange:(id)arg2 {
 	id val = arg1;
 	id val2 = arg2;
-	HBLogDebug(@"keybag called, arg1: %@ (arg2) value: %@", val, val2);
+	NSLog(@"keybag called, arg1: %@ (arg2) value: %@", val, val2);
 	%orig;
 }
 //: Tells us whether there is a passcode set 
 -(BOOL)hasPasscodeSet {
 	BOOL val = %orig;
-	HBLogDebug(@"hasPasscodeSet %d", val);
+	NSLog(@"hasPasscodeSet %d", val);
 	return val;
 }
 //: start up for arg1 returns :  <SBFAuthenticationAssertionManager: 0x17422bd00> 
@@ -472,38 +718,38 @@ static id defaultVal;
 	id val3 = arg3; 
 	id val4 = arg4; 
 	id finalValue = %orig;
-	HBLogDebug(@"initWithAssertionManager, arg values: %@ %@ %@ %@ return val: %@", val, val2, val3, val4, finalValue);
+	NSLog(@"initWithAssertionManager, arg values: %@ %@ %@ %@ return val: %@", val, val2, val3, val4, finalValue);
 	return %orig;
 }
 //: The starting value is 2
 -(void)_initializeAuthenticationStateAndDateForLockState:(long long)arg1 {
 	long long val = arg1;
-	HBLogDebug(@"_initializeAuthenticationStateAndDateForLockState %lld", val); 
+	NSLog(@"_initializeAuthenticationStateAndDateForLockState %lld", val); 
 	%orig;
 }
 
 //: Starting value of arg1 is 2
 -(void)_establishAuthenticationStateForInit:(long long)arg1 {
 	long long val = arg1;
-	HBLogDebug(@"_establishAuthenticationStateForInit, arg1: %lld", val);
+	NSLog(@"_establishAuthenticationStateForInit, arg1: %lld", val);
 	//%log;
 	%orig;
 }
 //: arg1 is of type SBDefaultAuthenticationPolicy
 -(void)_setupPolicy:(id)arg1 {
 	id val = arg1;
-	HBLogDebug(@"_setupPolicy arg1: %@", val);
+	NSLog(@"_setupPolicy arg1: %@", val);
 	%orig;
 }
 //: Start up val for arg1 is YES
 -(void)_setHasBeenAuthenticatedOnceSinceBoot:(BOOL)arg1 {
 	BOOL val = arg1;
-	HBLogDebug(@"_setHasBeenAuthenticatedOnceSinceBoot, arg1: %d", val);
+	NSLog(@"_setHasBeenAuthenticatedOnceSinceBoot, arg1: %d", val);
 	%orig;
 }
 //: THis is called at startup
 -(void)_clearUnblockTimer {
-	HBLogDebug(@"_clearUnblockTimer");
+	NSLog(@"_clearUnblockTimer");
 	//%log;
 	%orig;
 }
@@ -523,7 +769,7 @@ static id defaultVal;
 //: UPDATE 17 CORRECT ATTEMPT:  arg1: <SBFAuthenticationRequest: 0x174447140; type: 1; source: 0; handler: <__NSMallocBlock__: 0x174869b40>>, arg2 (null)
 -(BOOL)_processAuthenticationRequest:(id)arg1 responder:(id)arg2 {
 	BOOL val = %orig;
-	HBLogDebug(@"_processAuthenticationRequest, arg1: %@, responder %@", arg1, arg2);
+	NSLog(@"_processAuthenticationRequest, arg1: %@, responder %@", arg1, arg2);
 	//%log;
 	return val;
 }
@@ -549,9 +795,9 @@ static id defaultVal;
 -(long long)_evaluateAuthenticationAttempt:(id)arg1 outError:(id*)arg2 {
 	//%log;
 	long long val = %orig;
-	HBLogDebug(@"_evaluateAuthenticationAttempt, arg1: %@ arg2: %@", arg1, *arg2);
-	//HBLogDebug(@"arg2 is %@", *arg2);
-	//HBLogDebug(@"arg2 belongs to %@", [*arg2 class]);
+	NSLog(@"_evaluateAuthenticationAttempt, arg1: %@ arg2: %@, returnVAL: %lld", arg1, *arg2, val);
+	//NSLog(@"arg2 is %@", *arg2);
+	//NSLog(@"arg2 belongs to %@", [*arg2 class]);
 	//: arg2 = Error Domain=com.apple.springboardfoundation.mkb Code=-3 "(null)"
 	//: arg2 belongs to NSError
 	return val;
@@ -578,9 +824,9 @@ static id defaultVal;
 //: ?? CORRECT 17TH PASS ATTEMPT,  arg1: 2, arg2: <SBFAuthenticationRequest: 0x175a43f30; type: 1; source: 0; handler: <__NSMallocBlock__: 0x17427c8c0>>, arg3: (null), responder: (null)
 
 -(void)_notifyClientsOfAuthenticationResult:(long long)arg1 forRequest:(id)arg2 error:(id)arg3 withResponder:(id)arg4 {
-	HBLogDebug(@"_notifyClientsOfAuthenticationResult, arg1: %lld, arg2: %@, arg3: %@, responder: %@", arg1, arg2, arg3, arg4);
-	//HBLogDebug(@"arg3 is %@", arg3);
-	//HBLogDebug(@"arg3 belongs to %@", [arg3 class]);
+	NSLog(@"_notifyClientsOfAuthenticationResult, arg1: %lld, arg2: %@, arg3: %@, responder: %@", arg1, arg2, arg3, arg4);
+	//NSLog(@"arg3 is %@", arg3);
+	//NSLog(@"arg3 belongs to %@", [arg3 class]);
 	//%log;
 	//: arg3 = Error Domain=com.apple.springboardfoundation.mkb Code=-3 "(null)"
 	//: arg3 belongs to NSError
@@ -605,7 +851,7 @@ static id defaultVal;
 //: ??? AFTER 17 CORRECT ATTEMPT, arg1: 2, return val: YES
 -(BOOL)_boolForAuthenticationResult:(long long)arg1 {
 	BOOL val = %orig;
-	HBLogDebug(@"_boolForAuthenticationResult arg1: %lld, return val: %d", arg1, val);
+	NSLog(@"_boolForAuthenticationResult arg1: %lld, return val: %d", arg1, val);
 	//%log;
 	return val;
 }
@@ -613,7 +859,7 @@ static id defaultVal;
 //: CALLED ON THE 16 CORRECT ATTEMPT, arg1: <SBFAuthenticationRequest: 0x174447140; type: 1; source: 0; handler: <__NSMallocBlock__: 0x174869b40>>, responder: (null)
 //: CALLED ON THE 17 CORRECT ATTEMPT, arg1: <SBFAuthenticationRequest: 0x175a43f30; type: 1; source: 0; handler: <__NSMallocBlock__: 0x17427c8c0>>, responder: (null)
 -(void)_handleSuccessfulAuthentication:(id)arg1 responder:(id)arg2  {
-	HBLogDebug(@"_handleSuccessfulAuthentication, arg1: %@, responder: %@", arg1, arg2);
+	NSLog(@"_handleSuccessfulAuthentication, arg1: %@, responder: %@", arg1, arg2);
 	//%log;
 	%orig;
 }
@@ -629,9 +875,9 @@ static id defaultVal;
 //: CALLED AFTER 14TH ATTEMPT, arg1: <SBFAuthenticationRequest: 0x1750544f0; type: 1; source: 0; handler: <__NSMallocBlock__: 0x17546e040>>, arg2: Error Domain=com.apple.springboardfoundation.mkb Code=-14 "(null)", arg3: (null)
 //: CALLED AFTER 15TH ATTEMPT, arg1: <SBFAuthenticationRequest: 0x171854a00; type: 1; source: 0; handler: <__NSMallocBlock__: 0x17147ecc0>>, arg2: Error Domain=com.apple.springboardfoundation.mkb Code=-14 "(null)", arg3: (null)
 -(void)_handleFailedAuthentication:(id)arg1 error:(id)arg2 responder:(id)arg3 {
-	HBLogDebug(@"_handleFailedAuthentication, arg1: %@, arg2: %@, responder: %@", arg1, arg2, arg3);
-	//HBLogDebug(@"arg2 is %@", arg2);
-	//HBLogDebug(@"arg2 belongs to %@", [arg2 class]);
+	NSLog(@"_handleFailedAuthentication, arg1: %@, arg2: %@, responder: %@", arg1, arg2, arg3);
+	//NSLog(@"arg2 is %@", arg2);
+	//NSLog(@"arg2 belongs to %@", [arg2 class]);
 	//%log;
 
 	//: arg2 = Error Domain=com.apple.springboardfoundation.mkb Code=-3 "(null)"
@@ -647,7 +893,7 @@ static id defaultVal;
 //: CALLED AFTER 8TH FAILED ATTEMPT, arg1: <SBFAuthenticationRequest: 0x1754597d0; type: 1; source: 0; handler: <__NSMallocBlock__: 0x17446e000>>, arg2: (null)
 //: CALLED AFTER 8TH FAILED ATTEMPT, arg1: <SBFAuthenticationRequest: 0x171451f40; type: 1; source: 0; handler: <__NSMallocBlock__: 0x170a7e500>>, arg2: (null)
 -(void)_handleInvalidAuthentication:(id)arg1 responder:(id)arg2 {
-	HBLogDebug(@"_handleInvalidAuthentication, arg1: %@, responder: %@", arg1, arg2);
+	NSLog(@"_handleInvalidAuthentication, arg1: %@, responder: %@", arg1, arg2);
 	//%log;
 	%orig;
 }
@@ -656,7 +902,7 @@ static id defaultVal;
 //: The order for startup is : (_scheduleUnblockTimer) then (_clearUnblockTimer) and finally (_refreshModelCacheIfNeeded)
 //: UPDATE: this is called after (_handleFailedAuthentication)
 -(void)_scheduleUnblockTimer {
-	HBLogDebug(@"_scheduleUnblockTimer");
+	NSLog(@"_scheduleUnblockTimer");
 	//%log;
 	//%orig;
 	//[self _unblockTimerFired];
@@ -665,7 +911,7 @@ static id defaultVal;
 //: AFTER THE 16 CORRECT PASS, ARG1: 1
 //: AFTER THE 17 CORRECT PASS, ARG1: 1
 -(void)_setAuthState:(long long)arg1  {
-	HBLogDebug(@"_setAuthState, arg1 %lld", arg1);
+	NSLog(@"_setAuthState, arg1 %lld", arg1);
 	//%log;
 	%orig;
 }
@@ -676,14 +922,14 @@ static id defaultVal;
 //: UPDATE, after (revokeAuthenticationIfNecessaryForPublicReason) gets called because of lock screen going away, this func gets called.
 //: GETS CALLED AFTER 17 CORRECT PASS: arg1 0, reason: authentication successful from authentication request
 -(void)_updateAuthenticationStateImmediately:(BOOL)arg1 forPublicReason:(id)arg2 {
-	HBLogDebug(@"_updateAuthenticationStateImmediately, arg1 %d, reason: %@", arg1, arg2);
+	NSLog(@"_updateAuthenticationStateImmediately, arg1 %d, reason: %@", arg1, arg2);
 	%orig;
 }
 
 //: Called when user uses finger as passcode
 -(BOOL)_performNilPasscodeCheck{
 	BOOL val = %orig;
-	HBLogDebug(@"_performNilPasscodeCheck return val: %d", val);
+	NSLog(@"_performNilPasscodeCheck return val: %d", val);
 	return val;
 }
 
@@ -691,7 +937,7 @@ static id defaultVal;
 //: arg1 is 1 or YES when locked and 0 OR NO when unlocked
 //: AFTER CORRECT 16 PASS, ARG1: NO and and arg2 is YES
 -(void)_setSecureMode:(BOOL)arg1 postNotification:(BOOL)arg2 {
-	HBLogDebug(@"_setSecureMode, arg1: %d, notification: %d", arg1, arg2);
+	NSLog(@"_setSecureMode, arg1: %d, notification: %d", arg1, arg2);
 	//%log;
 	%orig;
 }
@@ -700,32 +946,32 @@ static id defaultVal;
 //: ON THE CORRECT 16 PASS, THIS RETURNS A YES
 -(BOOL)_isUserAuthenticated{
 	BOOL val = %orig;
-	HBLogDebug(@"_isUserAuthenticated %d", val);
+	NSLog(@"_isUserAuthenticated %d", val);
 	return val;
 }
 //arg1: 0, reason remove authentication assertion: <SBFAuthenticationAssertion: 0x170e45b80; reason: UI unlocked; type: SustainAuthentication; valid: NO>
 -(void)_revokeAuthenticationImmediately:(BOOL)arg1 forPublicReason:(id)arg2 {
 	BOOL val = arg1;
-	HBLogDebug(@"_revokeAuthenticationImmediately, arg1: %d, reason %@", val, arg2);
+	NSLog(@"_revokeAuthenticationImmediately, arg1: %d, reason %@", val, arg2);
 	%orig;
 }
 
 //: Called after removeAuthenticationAssertion(), arg1 is remove authentication assertion: <SBFAuthenticationAssertion: 0x170e4b5e0; reason: DashBoardAttemptUnlock; type: SustainGracePeriod; valid: NO>
 -(void)_updateAuthenticationStateForPublicReason:(id)arg1 {
-	HBLogDebug(@"_updateAuthenticationStateForPublicReason, arg1: %@", arg1);
+	NSLog(@"_updateAuthenticationStateForPublicReason, arg1: %@", arg1);
 	//%log;
 	 %orig;
 }
 
 //: Gets called whenever user taps a number
 -(void)notePasscodeEntryBegan {
-	//HBLogDebug(@"notePasscodeEntryBegan");
+	//NSLog(@"notePasscodeEntryBegan");
 	//%log;
 	 %orig;
 }
 //: Gets called when user deletes all numbers tapped
 -(void)notePasscodeEntryCancelled {
-	//HBLogDebug(@"notePasscodeEntryCancelled");
+	//NSLog(@"notePasscodeEntryCancelled");
 	//%log;
 	 %orig;
 }
@@ -736,7 +982,7 @@ static id defaultVal;
 //: CALLED AFTER SUCCESS TO0!
 //: UPDATE: 17: CALLED AFTER SUCCES ENTRY.
 -(void)_notifyAboutTemporaryBlockStatusChanged {
-	HBLogDebug(@"_notifyAboutTemporaryBlockStatusChanged");
+	NSLog(@"_notifyAboutTemporaryBlockStatusChanged");
 	//%log;
 	 %orig;
 }
@@ -744,19 +990,19 @@ static id defaultVal;
 //: AFTER 13TH ATTEMPT WRONG:  return val YES! (This is called after (_refreshModelCacheIfNeeded))
 -(BOOL)_isTemporarilyBlocked {
 	BOOL val = %orig;
-	HBLogDebug(@"_isTemporarilyBlocked, return val %d", val);
+	NSLog(@"_isTemporarilyBlocked, return val %d", val);
 	return NO;
 }
 //: The startup return val is NO.
 //: AFTER 13 ATTEMPT: return val YES! (This is called after (_refreshModelCacheIfNeeded))
 -(BOOL)_isPermanentlyBlocked {
 	 BOOL val = %orig;
-	HBLogDebug(@"_isPermanentlyBlocked, return val %d", val);
+	NSLog(@"_isPermanentlyBlocked, return val %d", val);
 	return NO;
 }
 //: This is called at startup
 -(void)_refreshModelCacheIfNeeded{
-	HBLogDebug(@"_refreshModelCacheIfNeeded");
+	NSLog(@"_refreshModelCacheIfNeeded");
 	//%log;
 	%orig;
 }
@@ -782,9 +1028,9 @@ static id defaultVal;
 //: ??? 17 CORRECT PASS: arg1: <SBFAuthenticationRequest: 0x175a43f30; type: 1; source: 0; handler: <__NSMallocBlock__: 0x17427c8c0>>, error: (null), returnVal: val: 2
 -(long long)_evaluatePasscodeAttempt:(id)arg1 outError:(id*)arg2 {
 	long long val = %orig;
-	HBLogDebug(@"_evaluatePasscodeAttempt, arg1: %@, error: %@, returnVal: val: %lld", arg1, *arg2, val);
-	//HBLogDebug(@"arg2 is %@", *arg2);
-	//HBLogDebug(@"arg2 belongs to %@", [*arg2 class]);
+	NSLog(@"_evaluatePasscodeAttempt, arg1: %@, error: %@, returnVal: val: %lld", arg1, *arg2, val);
+	//NSLog(@"arg2 is %@", *arg2);
+	//NSLog(@"arg2 belongs to %@", [*arg2 class]);
 	//: arg2 = Error Domain=com.apple.springboardfoundation.mkb Code=-3 "(null)"
 	//: arg2 belongs to NSError
 	//%log;
@@ -806,26 +1052,26 @@ static id defaultVal;
 //:??? 17 CORRECT PASS: arg1: <32353830>, outError: (null), returnVal: 1
 -(BOOL)_authenticateWithPasscodeData:(id)arg1 outError:(id*)arg2 {
 	BOOL val = %orig;
-	HBLogDebug(@"_authenticateWithPasscodeData called with -> arg1: %@, outError: %@, returnVal: %d", arg1, *arg2, val);
+	NSLog(@"_authenticateWithPasscodeData called with -> arg1: %@, outError: %@, returnVal: %d", arg1, *arg2, val);
 	/*
-	HBLogDebug(@"_authenticateWithPasscodeData!");
-	HBLogDebug(@"arg1 is %@", arg1);
-	HBLogDebug(@"arg1 belongs to %@", [arg1 class]);
+	NSLog(@"_authenticateWithPasscodeData!");
+	NSLog(@"arg1 is %@", arg1);
+	NSLog(@"arg1 belongs to %@", [arg1 class]);
 
 	NSString* myString;
 	myString = [[NSString alloc] initWithData:arg1 encoding:NSUTF8StringEncoding];
-	HBLogDebug(@"arg1 in string is: %@", myString);
+	NSLog(@"arg1 in string is: %@", myString);
 
 	NSData* data = [myString dataUsingEncoding:NSUTF8StringEncoding];
-	HBLogDebug(@"converting arg1 back is: %@", data);
+	NSLog(@"converting arg1 back is: %@", data);
 	
 	// id val = *arg2;
-	// HBLogDebug(@"arg2 belongs to %@", [val class]);
+	// NSLog(@"arg2 belongs to %@", [val class]);
 	BOOL val = %orig;
-	HBLogDebug(@"thE return VALUE IS %d", val);
+	NSLog(@"thE return VALUE IS %d", val);
 	
-	HBLogDebug(@"arg2 is %@", *arg2);
-	HBLogDebug(@"arg2 belongs to %@", [*arg2 class]);
+	NSLog(@"arg2 is %@", *arg2);
+	NSLog(@"arg2 belongs to %@", [*arg2 class]);
 	*/
 	//: arg2 =  Error Domain=com.apple.springboardfoundation.mkb Code=-3 "(null)"
 	//: *arg2 belongs to NSError
@@ -837,38 +1083,38 @@ static id defaultVal;
 //: Gets called after "applicationDidFinishLaunching" (isAuthenticated) returns  NO.
 -(void)_setup_runLoopObserverIfNecessary{
 	//%log;
-	HBLogDebug(@"_setup_runLoopObserverIfNecessary");
+	NSLog(@"_setup_runLoopObserverIfNecessary");
 	%orig;
 }
 //: AFTER CORRECT 16 PASS, THIS IS CALLED AFTER (_setAuthState)
 -(void)_invalidateCachedPasscodeLockState {
 	//%log;
-	HBLogDebug(@"_invalidateCachedPasscodeLockState");
+	NSLog(@"_invalidateCachedPasscodeLockState");
 	%orig;
 }
 //: THIS IS CALLED AFTER CORRECT 16 PASS
 -(void)_updateSecureModeIfNecessaryForNewAuthState {
 	//%log;
-	HBLogDebug(@"_updateSecureModeIfNecessaryForNewAuthState");
+	NSLog(@"_updateSecureModeIfNecessaryForNewAuthState");
 	%orig;
 }
 //arg1 is 1 or true when bootup
 -(void)_setOkToSendNotifications:(BOOL)arg1  {
 	//%log;
-	HBLogDebug(@"_setOkToSendNotifications, arg1: %d", arg1);
+	NSLog(@"_setOkToSendNotifications, arg1: %d", arg1);
 	%orig;
 }
 //: i do have passcode, starting value of arg1: 2
 //: AFTER 17 CORRECT PASS, ARG1: 0
 -(void)_updateHasPasscodeSetForLockState:(long long)arg1 {
 	//%log;
-	HBLogDebug(@"_updateHasPasscodeSetForLockState, arg1: %lld", arg1);
+	NSLog(@"_updateHasPasscodeSetForLockState, arg1: %lld", arg1);
 	%orig;
 }
 //: At startup the return val is YES
 -(BOOL)_shouldRevokeAuthenticationNow{
 	BOOL val = %orig;
-	HBLogDebug(@"_shouldRevokeAuthenticationNow %d", val);
+	NSLog(@"_shouldRevokeAuthenticationNow %d", val);
 	return val;
 }
 //: yum this is called when timer is up and user can enter next input'
@@ -876,19 +1122,19 @@ static id defaultVal;
 //: CALLED AFTER 14TH ATTEMPT: Gets called exactly at the time (deviceLockStateMayHaveChangedForModel) stated.
 -(void)_unblockTimerFired {
 	//%log;
-	HBLogDebug(@"_unblockTimerFired");
+	NSLog(@"_unblockTimerFired");
 	%orig;
 }
 //: CALLED AFTER 17 CORRECT ATTEMPT: arg1: <SBFMobileKeyBagState: 0x170204ab0; lockState: Unlocked; isEffectivelyLocked: NO; permanentlyBlocked: NO; shouldWipe: NO; recoveryRequired: NO; recoveryPossible: YES; backOffTime: 0; failedAttemptCount: 0; escrowCount: 0>
 -(void)_updateAuthenticationStateAndDateForLockState:(id)arg1 {
 	//%log;
-	HBLogDebug(@"_updateAuthenticationStateAndDateForLockState, arg1: %@", arg1);
+	NSLog(@"_updateAuthenticationStateAndDateForLockState, arg1: %@", arg1);
 	%orig;
 }
 //:  NOT SURE WHEN CALLED
 -(void)deviceLockModelRequestsDeviceWipe:(id)arg1 {
 	//%log;
-	HBLogDebug(@"deviceLockModelRequestsDeviceWipe, arg1: %@", arg1);
+	NSLog(@"deviceLockModelRequestsDeviceWipe, arg1: %@", arg1);
 	%orig;
 }
 
@@ -906,8 +1152,8 @@ static id defaultVal;
 -(void)deviceLockStateMayHaveChangedForModel:(id)arg1 {
 	%orig(defaultVal);
 	//%log;
-	HBLogDebug(@"deviceLockStateMayHaveChangedForModel, arg1: %@", arg1);
-	//HBLogDebug(@"arg1 comes from,%@ ", [arg1 class]);
+	NSLog(@"deviceLockStateMayHaveChangedForModel, arg1: %@", arg1);
+	//NSLog(@"arg1 comes from,%@ ", [arg1 class]);
 
 	//: arg1 comes from SBFUserAuthenticationModelSEP
 	%orig;
@@ -917,7 +1163,7 @@ static id defaultVal;
 -(BOOL)hasAuthenticatedAtLeastOnceSinceBoot {
 	BOOL val = %orig;
 	//%log;
-	HBLogDebug(@"hasAuthenticatedAtLeastOnceSinceBoot, returnVal: %d", val);
+	NSLog(@"hasAuthenticatedAtLeastOnceSinceBoot, returnVal: %d", val);
 	return val;
 }
 //: At startup the return val is 0.
@@ -928,33 +1174,33 @@ static id defaultVal;
 -(BOOL)isAuthenticatedCached {
 	BOOL val = %orig;
 	//%log;
-	HBLogDebug(@"isAuthenticatedCached, returnVal: %d", val);
+	NSLog(@"isAuthenticatedCached, returnVal: %d", val);
 	return val;
 }
 //: Startup val for arg1: StartupTransitionToLockOut
 -(void)revokeAuthenticationImmediatelyIfNecessaryForPublicReason:(id)arg1 {
 	//%log;
-	HBLogDebug(@"revokeAuthenticationImmediatelyIfNecessaryForPublicReason, arg1: %@", arg1);
+	NSLog(@"revokeAuthenticationImmediatelyIfNecessaryForPublicReason, arg1: %@", arg1);
 	%orig;
 }
 //: Called after "applicationDidFinishLaunching", arg1: Lock button
 //: UPDATE: This gets called after lockscreen locks
 -(void)revokeAuthenticationIfNecessaryForPublicReason:(id)arg1 {
 	//%log;
-	HBLogDebug(@"revokeAuthenticationIfNecessaryForPublicReason, arg1: %@", arg1);
+	NSLog(@"revokeAuthenticationIfNecessaryForPublicReason, arg1: %@", arg1);
 	%orig;
 }
 //: Gets called after "applicationDidFinishLaunching", arg1: <SBFAuthenticationRequest: 0x171449b10; type: 1; source: 0; handler: <__NSMallocBlock__: 0x170e7e040>> & arg2: (null)
 //: UPDATE: This gets called when in the keypad view AND TYPING
 -(void)processAuthenticationRequest:(id)arg1 responder:(id)arg2 {
 	//%log;
-	HBLogDebug(@"processAuthenticationRequest, arg1: %@, arg2: %@", arg1, arg2);
+	NSLog(@"processAuthenticationRequest, arg1: %@, arg2: %@", arg1, arg2);
 	%orig;
 }
 //: GETS CALLED AFTER 16 CORRECT PASS: arg1: <SBFAuthenticationRequest: 0x175a43f30; type: 1; source: 0; handler: <__NSMallocBlock__: 0x17427c8c0>>
 -(void)processAuthenticationRequest:(id)arg1 {
 	//%log;
-	HBLogDebug(@"processAuthenticationRequest, arg1: %@", arg1);
+	NSLog(@"processAuthenticationRequest, arg1: %@", arg1);
 	%orig;
 }
 //: Called at startup, arg1:  <SBFAuthenticationAssertion: 0x170e4b5e0; reason: DashBoardAttemptUnlock; type: SustainGracePeriod; valid: NO>
@@ -964,49 +1210,49 @@ static id defaultVal;
 
 -(void)addAuthenticationAssertion:(id)arg1 {
 	//%log;
-	HBLogDebug(@"addAuthenticationAssertion, arg1: %@", arg1);
+	NSLog(@"addAuthenticationAssertion, arg1: %@", arg1);
 	%orig;
 }
 //: Called after "applicationDidFinishLaunching" <SBFAuthenticationAssertion: 0x170e4b5e0; reason: DashBoardAttemptUnlock; type: SustainGracePeriod; valid: NO>
 //: CALLED AFTER 17 CORRECT PASS: arg1: <SBFAuthenticationAssertion: 0x174e43390; reason: UI unlock attempt; type: SustainGracePeriod; valid: NO>
 -(void)removeAuthenticationAssertion:(id)arg1 {
 	//%log;
-	HBLogDebug(@"removeAuthenticationAssertion, arg1: %@", arg1);
+	NSLog(@"removeAuthenticationAssertion, arg1: %@", arg1);
 	%orig;
 }
 //:  NOT SURE WHEN CALLED
 -(double)_timeUntilUnblockedSinceReferenceDate{
 	double val = %orig;
 	//%log;
-	HBLogDebug(@"_timeUntilUnblockedSinceReferenceDate, returnVal: %f", val);
+	NSLog(@"_timeUntilUnblockedSinceReferenceDate, returnVal: %f", val);
 	return val;
 }
 //: at startup arg1 is: <SBFDeviceLockOutController: 0x170235560; lockedOut: YES; thermalProvider: <SBThermalController: 0x1702dd1f0; ThermalLevel: None;
 //: Also at startup arg1 is: <SBLockScreenManager: 0x170153400; UI Locked: NO; Allows DisablePasscodeLockAssertion: NO; Allow Locking/Unlocking: NO>
 -(void)_addPrivateAuthenticationObserver:(id)arg1 {
-	HBLogDebug(@"_addPrivateAuthenticationObserver, arg1: %@", arg1);
+	NSLog(@"_addPrivateAuthenticationObserver, arg1: %@", arg1);
 	%orig;
 }
 //: Prints when the last valid password entered was
 -(NSDate *)lastRevokedAuthenticationDate {
 	NSDate *val = %orig;
-	HBLogDebug(@"lastRevokedAuthenticationDate, value  %@", val);
+	NSLog(@"lastRevokedAuthenticationDate, value  %@", val);
 	return val;
 }
 //: At startup arg1: YES
 -(void)setHasPasscodeSet:(BOOL)arg1  {
-	HBLogDebug(@"setHasPasscodeSet, arg1: %d", arg1);
+	NSLog(@"setHasPasscodeSet, arg1: %d", arg1);
 	%orig;
 }
 //:  NOT SURE WHEN CALLED
 -(id)_unblockTimer {
 	id val = %orig;
-	HBLogDebug(@"_unblockTimer, returnVal: %@", val);
+	NSLog(@"_unblockTimer, returnVal: %@", val);
 	return val;
 }
 //:  NOT SURE WHEN CALLED
 -(void)_setUnblockTimer:(id)arg1  {
-	HBLogDebug(@"_setUnblockTimer, arg1 %@", arg1);
+	NSLog(@"_setUnblockTimer, arg1 %@", arg1);
 	%orig;
 }
 //: At startup this returns a NO.
@@ -1014,19 +1260,19 @@ static id defaultVal;
 //: AT 17 CORRECT PASS, THIS RETURNS A YES
 -(BOOL)isAuthenticated {
 	BOOL val = %orig;
-	HBLogDebug(@"isAuthenticated, returnVal: %d", val);
+	NSLog(@"isAuthenticated, returnVal: %d", val);
 	return val;
 }
 
 //: Called at startup: arg1 <SBFUserAuthenticationModelSEP: 0x170648370; unblockTime: 0000-12-30 00:00:00 +0000; permanentlyBlocked: NO; pendingWipe: NO>
 -(void)_setModel:(id)arg1 {
 	//: arg1 is a SBUserAuthenticationModelSEP that contains an unblockTime, permantlyBlocked, pendingWipe
-	HBLogDebug(@"_setModel, arg1 %@", arg1);
+	NSLog(@"_setModel, arg1 %@", arg1);
 
 	if (!hasBeenCalledBefore) {
 		defaultVal = arg1;
 		hasBeenCalledBefore = YES;
-		HBLogDebug(@"I should only be called once...............");
+		NSLog(@"I should only be called once...............");
 	}
 
 	%orig;
@@ -1034,19 +1280,19 @@ static id defaultVal;
 //: Start up val is of:  <SBFUserAuthenticationController: 0x1742f5000; authState: Revoked; passcodeSet: YES> 
 -(id)descriptionWithMultilinePrefix:(id)arg1 {
 	id val = %orig;
-	HBLogDebug(@"descriptionWithMultilinePrefix, returnVal: %@", val);
+	NSLog(@"descriptionWithMultilinePrefix, returnVal: %@", val);
 	return val;
 }
 //: Start up val is of type: <BSDescriptionBuilder: 0x17486b440>
 -(id)succinctDescriptionBuilder {
 	id val = %orig;
-	HBLogDebug(@"succinctDescriptionBuilder, returnVal: %@", val);
+	NSLog(@"succinctDescriptionBuilder, returnVal: %@", val);
 	return val;
 }
 //: Start up val is of: <BSDescriptionBuilder: 0x17486b440>
 -(id)descriptionBuilderWithMultilinePrefix:(id)arg1 {
 	id val = %orig;
-	HBLogDebug(@"descriptionBuilderWithMultilinePrefix, returnVal: %@", val);
+	NSLog(@"descriptionBuilderWithMultilinePrefix, returnVal: %@", val);
 	return val;
 }
 
@@ -1055,6 +1301,6 @@ static id defaultVal;
 %hook SpringBoard
 - (void)applicationDidFinishLaunching:(id)arg1 {
 	%orig;
-	HBLogDebug(@"applicationDidFinishLaunching");
+	NSLog(@"applicationDidFinishLaunching--------------------------------------------------------");
 }
 %end
